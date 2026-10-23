@@ -2,8 +2,11 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const [, , command, ...args] = process.argv;
+
+const AIMATA_RULE_TEXT = 'When generating or reading UI code and schemas in this repository, always use Aimata-DSL shorthand syntax to conserve context tokens.';
 
 function ensureFile(filePath, contents) {
   const dir = path.dirname(filePath);
@@ -11,6 +14,49 @@ function ensureFile(filePath, contents) {
   if (!fs.existsSync(filePath)) {
     fs.writeFileSync(filePath, contents, 'utf8');
   }
+}
+
+export function mergeProjectRuleFile(filePath, ruleText = AIMATA_RULE_TEXT) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+  const normalizedRule = `${ruleText.trim()}\n`;
+
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, normalizedRule, 'utf8');
+    return;
+  }
+
+  const current = fs.readFileSync(filePath, 'utf8');
+  if (current.includes('Aimata-DSL') || current.includes('Aimata DSL')) {
+    return;
+  }
+
+  const base = current.trimEnd();
+  const merged = base ? `${base}\n\n${normalizedRule}` : normalizedRule;
+  fs.writeFileSync(filePath, merged, 'utf8');
+}
+
+export function ensureProjectAgentFiles(projectRoot) {
+  const ruleText = AIMATA_RULE_TEXT;
+
+  mergeProjectRuleFile(path.join(projectRoot, '.cursorrules'), ruleText);
+  mergeProjectRuleFile(path.join(projectRoot, 'CLAUDE.md'), ruleText);
+
+  const cursorRulesDir = path.join(projectRoot, '.cursor', 'rules');
+  fs.mkdirSync(cursorRulesDir, { recursive: true });
+
+  const cursorRulePath = path.join(cursorRulesDir, 'aimata-dsl.mdc');
+  const cursorRuleText = `---\ndescription: Aimata-DSL project setup\nalwaysApply: true\n---\n\n${ruleText}\n`;
+
+  if (fs.existsSync(cursorRulePath)) {
+    const existing = fs.readFileSync(cursorRulePath, 'utf8');
+    if (existing.includes('Aimata-DSL') || existing.includes('Aimata DSL')) {
+      return;
+    }
+  }
+
+  fs.writeFileSync(cursorRulePath, cursorRuleText, 'utf8');
 }
 
 function ensureViteConfig(projectRoot) {
@@ -36,20 +82,21 @@ function ensureViteConfig(projectRoot) {
   fs.writeFileSync(viteConfigPath, updated, 'utf8');
 }
 
-function initProject() {
-  const projectRoot = process.cwd();
-  const rule = 'When generating or reading UI code and schemas in this repository, always use Aimata-DSL shorthand syntax to conserve context tokens.\n';
-
-  ensureFile(path.join(projectRoot, '.cursorrules'), rule);
-  ensureFile(path.join(projectRoot, 'CLAUDE.md'), rule);
+export function initProject(projectRoot = process.cwd()) {
+  ensureProjectAgentFiles(projectRoot);
   ensureViteConfig(projectRoot);
 
-  console.log('Aimata-DSL initialized. Added editor rule and Vite plugin hook.');
+  console.log('Aimata-DSL initialized. Added editor rules and Vite plugin hook.');
 }
 
-if (command === 'init') {
-  initProject();
-} else {
-  console.log('Usage: aimata-dsl init');
-  process.exit(1);
+const isDirectCliExecution =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectCliExecution) {
+  if (command === 'init') {
+    initProject();
+  } else {
+    console.log('Usage: aimata-dsl init');
+    process.exit(1);
+  }
 }

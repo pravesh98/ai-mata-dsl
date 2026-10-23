@@ -14,7 +14,12 @@
  *  7. Props encoding (event handlers, data attrs)
  */
 
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
 import { compressToDSL, expandFromDSL, parse, compile } from './index.js';
+import { ensureProjectAgentFiles } from '../bin/cli.js';
 
 // ─── Minimal test harness ─────────────────────────────────────────────────────
 
@@ -248,6 +253,32 @@ section('10. Invalid target throws TypeError');
   try { expandFromDSL('[div|test]', 'ember'); }
   catch (e) { threw = e instanceof TypeError; }
   assert(threw, 'Unsupported target throws TypeError');
+}
+
+section('11. Project init merges with existing Claude and Cursor files');
+{
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aimata-init-'));
+
+  fs.writeFileSync(path.join(tempDir, 'CLAUDE.md'), '# Existing project notes\n\nKeep this repo stable.\n', 'utf8');
+  fs.writeFileSync(path.join(tempDir, '.cursorrules'), 'Existing cursor guidance\n', 'utf8');
+
+  const cursorDir = path.join(tempDir, '.cursor', 'rules');
+  fs.mkdirSync(cursorDir, { recursive: true });
+  fs.writeFileSync(path.join(cursorDir, 'existing.mdc'), '---\ndescription: Existing\nalwaysApply: true\n---\n\nKeep existing rules.\n', 'utf8');
+
+  ensureProjectAgentFiles(tempDir);
+
+  const claudeText = fs.readFileSync(path.join(tempDir, 'CLAUDE.md'), 'utf8');
+  const cursorText = fs.readFileSync(path.join(tempDir, '.cursorrules'), 'utf8');
+  const cursorRuleText = fs.readFileSync(path.join(cursorDir, 'aimata-dsl.mdc'), 'utf8');
+
+  assert(claudeText.includes('Existing project notes'), 'Existing Claude guidance is preserved');
+  assert(claudeText.includes('Aimata-DSL'), 'Claude file includes Aimata rule');
+  assert(cursorText.includes('Existing cursor guidance'), 'Existing Cursor guidance is preserved');
+  assert(cursorText.includes('Aimata-DSL'), 'Cursor file includes Aimata rule');
+  assert(cursorRuleText.includes('Aimata-DSL'), 'Cursor rules file includes Aimata rule');
+
+  fs.rmSync(tempDir, { recursive: true, force: true });
 }
 
 // ─── Summary ──────────────────────────────────────────────────────────────────

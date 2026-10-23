@@ -27,6 +27,47 @@ npm install @aimata-dsl/core
 
 ---
 
+## The core value: project-level setup
+
+This is the primary value of Aimata DSL: set it up once at the repository level and let AI coding assistants work in the compact format by default.
+
+```bash
+npx aimata-dsl init
+```
+
+This creates the repo instructions for tools like Cursor and Claude, adds the Vite integration, and makes the project default to Aimata shorthand without needing manual per-file configuration. That is the real advantage over a one-off per-component usage pattern.
+
+This is the recommended setup for product teams and AI-driven frontend workflows.
+
+### How the project-level flow works
+
+The repo-level setup does not lock the project into a single compressed format forever. Instead, it tells the AI to prefer Aimata shorthand while still understanding and producing normal React/HTML/TS code when needed.
+
+```text
+1. run: npx aimata-dsl init
+2. repo gets .cursorrules + CLAUDE.md guidance
+3. your AI agent prefers Aimata shorthand in this project
+4. UI/schema code is generated in compact DSL form for context efficiency
+5. final output expands back to regular JSX / HTML / TS for the app
+```
+
+Example:
+
+```text
+Compressed working form:
+form[space-y-4] { label[text-sm.font-bold] "Email", input[type="text", class="border p-2 rounded"] }
+
+Expanded final JSX:
+<form className="space-y-4">
+  <label className="text-sm font-bold">Email</label>
+  <input type="text" className="border p-2 rounded" />
+</form>
+```
+
+This means the AI works in a smaller, more efficient shorthand when reading or generating UI structure, but the actual app code remains normal framework code.
+
+---
+
 ## Quick start
 
 ```js
@@ -62,6 +103,25 @@ That means:
 - props are encoded as key=value pairs
 - nested structure stays explicit
 - expansion is deterministic and reversible
+
+### Why this is different from minified JS
+
+Normal JavaScript minification is about reducing bundle size for runtime delivery in production. It removes whitespace, shortens variable names, and optimizes code for browsers or bundlers.
+
+Aimata DSL is different: it is a semantic compression layer for UI structure, designed for AI workflows and human-to-AI exchange, not for shipping final JavaScript to the browser.
+
+In practice:
+- minified JS makes code smaller at runtime
+- Aimata DSL makes UI definitions smaller in prompts, memory, and model context
+- minification is lossy in a developer sense and aimed at performance
+- Aimata DSL is structured, reversible, and designed to expand back into readable source code
+
+This means Aimata DSL is useful for:
+- AI agents and model context compression
+- UI generation pipelines
+- prompt/token optimization
+- component-heavy UI workflows
+- preserving structure while reducing payload size
 
 ---
 
@@ -173,6 +233,24 @@ npx aimata-dsl init
 This is the project-level setup step. It adds the repo instruction file for AI tooling, creates the default rule for Claude/Cursor-style agents, and wires in the Vite plugin so the project automatically understands and expands Aimata DSL in normal development workflows.
 
 Once initialized, the agent should prefer Aimata shorthand by default when reading or generating UI code in that repository, without needing to import or reconfigure the compiler in every single file.
+
+### Project-level agent setup guide
+
+Use this when you want the whole repo to behave like an Aimata project automatically.
+
+```bash
+npx aimata-dsl init
+```
+
+What it does:
+- creates a root `.cursorrules` file for Cursor
+- creates a root `CLAUDE.md` file for Claude-style agents
+- adds the Vite plugin config if it is missing
+- makes the repository default to Aimata shorthand for UI work
+
+This is the recommended setup for teams using AI coding assistants in a shared project.
+
+Important: this is repo-scoped, not global. The behavior applies to the current project only, which is exactly what you want for a team or product codebase.
 
 ---
 

@@ -1,7 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import { compressToDSL, expandFromDSL } from '../src/index.js';
+import { mergeProjectRuleFile, ensureProjectAgentFiles } from '../bin/cli.js';
 
 test('compresses verbose HTML/Tailwind into box[...] and btn[...] DSL', () => {
   const source = `
@@ -74,4 +78,33 @@ test('supports database table schema shorthand and SQL/Prisma/TS expansion', () 
   assert.match(ts, /export interface users/);
   assert.match(ts, /id: number;/);
   assert.match(ts, /email: string;/);
+});
+
+test('init merges with existing Claude and Cursor project rules instead of overwriting them', () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'aimata-init-'));
+
+  const existingClaude = '# Existing project notes\n\nKeep this repo stable.\n';
+  const existingCursor = 'Existing cursor guidance\n';
+
+  fs.writeFileSync(path.join(tempDir, 'CLAUDE.md'), existingClaude, 'utf8');
+  fs.writeFileSync(path.join(tempDir, '.cursorrules'), existingCursor, 'utf8');
+
+  const cursorRulesDir = path.join(tempDir, '.cursor', 'rules');
+  fs.mkdirSync(cursorRulesDir, { recursive: true });
+  const cursorRuleFile = path.join(cursorRulesDir, 'existing.mdc');
+  fs.writeFileSync(cursorRuleFile, '---\ndescription: Existing\nalwaysApply: true\n---\n\nKeep existing rules.\n', 'utf8');
+
+  ensureProjectAgentFiles(tempDir);
+
+  const claudeText = fs.readFileSync(path.join(tempDir, 'CLAUDE.md'), 'utf8');
+  const cursorText = fs.readFileSync(path.join(tempDir, '.cursorrules'), 'utf8');
+  const ruleFile = fs.readFileSync(path.join(tempDir, '.cursor', 'rules', 'aimata-dsl.mdc'), 'utf8');
+
+  assert.match(claudeText, /Existing project notes/);
+  assert.match(claudeText, /Aimata-DSL/);
+  assert.match(cursorText, /Existing cursor guidance/);
+  assert.match(cursorText, /Aimata-DSL/);
+  assert.match(ruleFile, /Aimata-DSL/);
+
+  fs.rmSync(tempDir, { recursive: true, force: true });
 });

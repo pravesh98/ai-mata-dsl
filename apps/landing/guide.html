@@ -37,6 +37,8 @@
       <div class="toc-label">On this page</div>
       <nav class="toc" aria-label="Table of contents">
         <a href="#install" class="toc-link">Installation</a>
+        <a href="#project-setup" class="toc-link">Project-level setup</a>
+        <a href="#project-workflow" class="toc-link indent">How the workflow works</a>
         <a href="#quick-start" class="toc-link">Quick Start</a>
         <a href="#dsl-syntax" class="toc-link">DSL Syntax</a>
         <a href="#api-compress" class="toc-link indent">compressToDSL()</a>
@@ -105,7 +107,60 @@
       </div>
     </section>
 
-    <!-- ── 2. Quick Start ─────────────────────────────────────────── -->
+    <!-- ── 2. Project-level setup first ───────────────────────────── -->
+    <section id="project-setup" class="doc-section">
+      <h2 class="doc-h2">Project-level setup</h2>
+      <p class="doc-p">This is the main product value: configure Aimata once at the repository level so your AI tools work in the compressed format by default across the project.</p>
+
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code>npx aimata-dsl init</code></pre></div>
+
+      <p class="doc-p">This adds the repo instruction files for toolchains like Cursor and Claude, wires in the Vite plugin, and makes the project prefer Aimata shorthand without needing a manual per-file setup everywhere.</p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">⚙</span>
+        <div><strong>Why this matters:</strong> repo-scoped setup creates a project-wide baseline. A per-file import is useful for isolated examples, but the bigger value is setting the default behavior for the whole application ecosystem.</div>
+      </div>
+
+      <h3 id="project-workflow" class="doc-h3">How the workflow works</h3>
+      <p class="doc-p">Aimata is designed to make AI-assisted development more efficient without making the project harder to read or maintain. The repo-level setup does not mean “every file must stay in compressed DSL forever.” Instead, it sets a default behavior: when an AI tool works inside this repository, it should prefer Aimata shorthand as the working format for UI and schema-heavy code, while still expanding back to ordinary JSX, HTML, or TypeScript when the code is being saved or used in a real app.</p>
+
+      <p class="doc-p">Think of it as a two-layer workflow:</p>
+
+      <ul class="doc-list">
+        <li><strong>Layer 1:</strong> compact working format for AI reasoning and prompt efficiency</li>
+        <li><strong>Layer 2:</strong> standard app code for actual implementation and framework compatibility</li>
+      </ul>
+
+      <p class="doc-p">This is the real lifecycle:</p>
+
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code>1. you run: npx aimata-dsl init
+2. the repo gets AI project instructions for Cursor / Claude / other tools
+3. the assistant sees that this project prefers Aimata shorthand by default
+4. UI, forms, tables, and component state are generated in compact DSL form
+5. the AI keeps the structure semantic and token-efficient while it is working
+6. before saving or shipping, it expands back to normal React / HTML / TS code
+7. the final result is readable app code, not a compressed DSL-only codebase</code></pre></div>
+
+      <p class="doc-p">This matters because large UI trees are expensive in prompt space. Repeated JSX, long class strings, nested props, and repeated component structure all cost tokens. Aimata reduces this overhead by turning the structure into a compact but lossless representation, then expanding it back into readable source when needed.</p>
+
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-comment">// compact form the AI prefers while working</span>
+form[space-y-4] {
+  label[text-sm.font-bold] "Email",
+  input[type="text", class="border p-2 rounded"]
+}
+
+<span class="c-comment">// expanded final JSX used by the project</span>
+&lt;form className="space-y-4"&gt;
+  &lt;label className="text-sm font-bold"&gt;Email&lt;/label&gt;
+  &lt;input type="text" className="border p-2 rounded" /&gt;
+&lt;/form&gt;</code></pre></div>
+
+      <p class="doc-p">A practical way to think about it: the DSL is the AI-friendly shorthand, but the source code that gets committed is still normal framework code. The setup tells the assistant to prefer the shorthand by default, not to abandon real app conventions.</p>
+
+      <p class="doc-p">That is the core value: less context waste during generation, while keeping the output clean and production-ready.</p>
+    </section>
+
+    <!-- ── 3. Quick Start ─────────────────────────────────────────── -->
     <section id="quick-start" class="doc-section">
       <h2 class="doc-h2">Quick Start</h2>
       <p class="doc-p">Import the core functions and start compressing a full project workflow, not just a single component:</p>
@@ -140,7 +195,28 @@
 <span class="c-comment">// → '&lt;button class="px-4 py-2 bg-blue-500 ..." data-onclick="handleClick"&gt;Submit&lt;/button&gt;'</span></code></pre></div>
     </section>
 
-    <!-- ── 3. DSL Syntax ──────────────────────────────────────────── -->
+    <!-- ── 3. Project-level AI setup ─────────────────────────────── -->
+    <section id="project-agents" class="doc-section">
+      <h2 class="doc-h2">Project-level AI setup</h2>
+      <p class="doc-p">Use the repo-level init command once so your AI coding assistant understands that this project should prefer Aimata shorthand automatically.</p>
+
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code>npx aimata-dsl init</code></pre></div>
+
+      <p class="doc-p">This creates the project instructions that guide agents in the repo:</p>
+
+      <ul class="doc-list">
+        <li><code>.cursorrules</code> for Cursor</li>
+        <li><code>CLAUDE.md</code> for Claude-style tooling</li>
+        <li>the Vite plugin config used for normal project development</li>
+      </ul>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">⚙</span>
+        <div><strong>Important:</strong> this is repo-scoped behavior. It applies to the current project and avoids needing to manually import or configure the compiler in every file.</div>
+      </div>
+    </section>
+
+    <!-- ── 4. DSL Syntax ──────────────────────────────────────────── -->
     <section id="dsl-syntax" class="doc-section">
       <h2 class="doc-h2">DSL Syntax</h2>
       <p class="doc-p">The Aimata micro-DSL encodes component trees in a compact bracket notation:</p>
