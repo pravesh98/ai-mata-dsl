@@ -6,12 +6,13 @@
  * Micro-DSL format:
  *   [tag#id.cls1.cls2{prop1=val1,prop2=val2}|children]
  *
- * Rules:
- *  - tag      → HTML tag or PascalCase component name
- *  - #id      → element id (optional)
- *  - .cls     → dot-separated class list (optional)
- *  - {k=v}    → comma-separated prop map (optional)
- *  - |...     → children (text or nested [DSL] nodes) (optional)
+ * Supported expansion targets:
+ *   'react'   → className, onClick={fn}, JSX self-closing
+ *   'html'    → class, data-onclick, standard HTML
+ *   'vue'     → class, @click="fn", :prop="val", Vue template syntax
+ *   'angular' → class, (click)="fn()", [prop]="val", Angular template
+ *   'svelte'  → class, on:click={fn}, Svelte template syntax
+ *   'solid'   → class, onClick={fn}, SolidJS (same as React surface, different runtime)
  *
  * Example:
  *   Input:  <button className="px-4 py-2 bg-blue-500" onClick={handleClick}>Submit</button>
@@ -20,43 +21,65 @@
 
 import { parse } from './parser.js';
 
+// ─── Supported targets ────────────────────────────────────────────────────────
+
+/** @type {Set<string>} */
+const SUPPORTED_TARGETS = new Set(['react', 'html', 'vue', 'angular', 'svelte', 'solid']);
+
+/**
+ * Map of event handler prefixes by target framework.
+ * Key: camelCase event name portion after 'on' (e.g. 'click' from 'onClick')
+ */
+const EVENT_PATTERNS = {
+  // React/Solid: keep full camelCase key (onClick, onChange, etc.)
+  react:   { wrapper: (key, v) => `${key}={${v}}` },
+  solid:   { wrapper: (key, v) => `${key}={${v}}` },
+  // Vue: strip 'on' prefix, lowercase → @click="val"
+  vue:     { wrapper: (key, v) => `@${key.slice(2).toLowerCase()}="${v}"` },
+  // Angular: strip 'on', lowercase → (click)="val()"
+  angular: { wrapper: (key, v) => `(${key.slice(2).toLowerCase()})="${v}()"` },
+  // Svelte: strip 'on', lowercase → on:click={val}
+  svelte:  { wrapper: (key, v) => `on:${key.slice(2).toLowerCase()}={${v}}` },
+  // HTML: strip 'on', lowercase → data-onclick="val"
+  html:    { wrapper: (key, v) => `data-on${key.slice(2).toLowerCase()}="${v}"` },
+};
+
+/** Class attribute name per target */
+const CLASS_ATTR = {
+  react: 'className',
+  // SolidJS templates use 'class' (not className) unlike React
+  solid: 'class',
+  vue: 'class', angular: 'class', svelte: 'class', html: 'class',
+};
+
+/** Whether a target supports JSX-style expressions `{val}` for non-event props */
+const USES_JSX_EXPR = new Set(['react', 'solid']);
+
+// ─── Void elements (self-closing in HTML) ─────────────────────────────────────
+const VOID_ELEMENTS = new Set([
+  'area','base','br','col','embed','hr','img','input',
+  'link','meta','param','source','track','wbr',
+]);
+
 // ─── AST → DSL (Compression) ──────────────────────────────────────────────────
 
 /**
  * Serialize a single AST node into Aimata micro-DSL notation.
- *
  * @param {import('./parser.js').ASTNode} node
  * @returns {string}
  */
-function nodeTosDSL(node) {
-  if (node.type === 'text') {
-    return node.value;
-  }
+function nodeToDSL(node) {
+  if (node.type === 'text') return node.value;
 
   let dsl = '[' + node.tag;
-
-  // #id
   if (node.id) dsl += '#' + node.id;
-
-  // .class1.class2
-  if (node.classes && node.classes.length > 0) {
-    dsl += '.' + node.classes.join('.');
-  }
-
-  // {prop1=val1,prop2=val2}
+  if (node.classes && node.classes.length > 0) dsl += '.' + node.classes.join('.');
   if (node.props && Object.keys(node.props).length > 0) {
-    const propStr = Object.entries(node.props)
-      .map(([k, v]) => `${k}=${v}`)
-      .join(',');
-    dsl += '{' + propStr + '}';
+    dsl += '{' + Object.entries(node.props).map(([k, v]) => `${k}=${v}`).join(',') + '}';
   }
-
-  // |children
   if (node.children && node.children.length > 0) {
-    const childrenDSL = node.children.map(nodeTosDSL).join('');
-    dsl += '|' + childrenDSL;
+    dsl += '|' + node.children.map(nodeToDSL).join('');
   }
-
   dsl += ']';
   return dsl;
 }
@@ -77,25 +100,17 @@ export function compressToDSL(code) {
   }
   const ast = parse(code);
   if (ast.length === 0) return '';
-  // If multiple root nodes, wrap in a fragment-like notation
-  if (ast.length === 1) return nodeTosDSL(ast[0]);
-  return ast.map(nodeTosDSL).join('\n');
+  return ast.length === 1 ? nodeToDSL(ast[0]) : ast.map(nodeToDSL).join('\n');
 }
 
-// ─── DSL → Source (Expansion) ─────────────────────────────────────────────────
+// ─── DSL Parsing Helpers ──────────────────────────────────────────────────────
 
 /**
- * Parse a single DSL token string into a structured object.
- * Handles nested brackets by tracking depth.
- *
- * @param {string} dsl - A complete DSL token starting with '['
- * @returns {{ tag, id, classes, props, childrenRaw }}
+ * Parse a DSL token string into a structured object.
+ * @param {string} dsl
  */
 function parseDSLNode(dsl) {
-  // Strip outer [ ]
   let inner = dsl.slice(1, -1);
-
-  // Extract children (after first unescaped '|' at depth 0)
   let childrenRaw = '';
   let depth = 0;
   let pipeIdx = -1;
@@ -109,7 +124,6 @@ function parseDSLNode(dsl) {
     inner = inner.slice(0, pipeIdx);
   }
 
-  // Extract props block {k=v,...}
   let propsRaw = '';
   const propsMatch = inner.match(/\{([^}]*)\}$/);
   if (propsMatch) {
@@ -117,7 +131,6 @@ function parseDSLNode(dsl) {
     inner = inner.slice(0, inner.lastIndexOf('{'));
   }
 
-  // Now inner is: tag#id.cls1.cls2
   const idMatch = inner.match(/#([^.]+)/);
   const id = idMatch ? idMatch[1] : null;
   if (idMatch) inner = inner.replace(/#[^.]+/, '');
@@ -126,246 +139,172 @@ function parseDSLNode(dsl) {
   const tag = dotParts[0];
   const classes = dotParts.slice(1).filter(Boolean);
 
-  // Parse props
   const props = {};
   if (propsRaw) {
-    // Split on commas that are NOT inside nested brackets
-    const entries = splitProps(propsRaw);
-    for (const entry of entries) {
+    splitProps(propsRaw).forEach(entry => {
       const eqIdx = entry.indexOf('=');
-      if (eqIdx === -1) {
-        props[entry.trim()] = 'true';
-      } else {
-        const k = entry.slice(0, eqIdx).trim();
-        const v = entry.slice(eqIdx + 1).trim();
-        props[k] = v;
-      }
-    }
+      if (eqIdx === -1) props[entry.trim()] = 'true';
+      else { props[entry.slice(0, eqIdx).trim()] = entry.slice(eqIdx + 1).trim(); }
+    });
   }
 
   return { tag, id, classes, props, childrenRaw };
 }
 
-/**
- * Split a props string on commas, respecting nested brackets/parens.
- * @param {string} str
- * @returns {string[]}
- */
+/** Split comma-separated props respecting nested brackets */
 function splitProps(str) {
-  const parts = [];
-  let depth = 0;
-  let current = '';
+  const parts = []; let depth = 0; let current = '';
   for (const ch of str) {
-    if (ch === '(' || ch === '[' || ch === '{') depth++;
-    else if (ch === ')' || ch === ']' || ch === '}') depth--;
-    if (ch === ',' && depth === 0) {
-      parts.push(current);
-      current = '';
-    } else {
-      current += ch;
-    }
+    if ('([{'.includes(ch)) depth++;
+    else if (')]}'.includes(ch)) depth--;
+    if (ch === ',' && depth === 0) { parts.push(current); current = ''; }
+    else current += ch;
   }
   if (current) parts.push(current);
   return parts;
 }
 
-/**
- * Split a children string into top-level DSL nodes and text segments.
- * Handles nested brackets at arbitrary depth.
- *
- * @param {string} childrenRaw
- * @returns {Array<{type: 'dsl'|'text', value: string}>}
- */
+/** Split childrenRaw into top-level DSL nodes and text segments */
 function splitChildren(childrenRaw) {
-  const parts = [];
-  let i = 0;
-  let text = '';
-
+  const parts = []; let i = 0; let text = '';
   while (i < childrenRaw.length) {
     if (childrenRaw[i] === '[') {
       if (text) { parts.push({ type: 'text', value: text }); text = ''; }
-      // Find matching ]
-      let depth = 0;
-      let start = i;
+      let depth = 0; const start = i;
       while (i < childrenRaw.length) {
         if (childrenRaw[i] === '[') depth++;
         else if (childrenRaw[i] === ']') { depth--; if (depth === 0) { i++; break; } }
         i++;
       }
       parts.push({ type: 'dsl', value: childrenRaw.slice(start, i) });
-    } else {
-      text += childrenRaw[i++];
-    }
+    } else { text += childrenRaw[i++]; }
   }
   if (text.trim()) parts.push({ type: 'text', value: text.trim() });
   return parts;
 }
 
+// ─── DSL → Source (Expansion) ─────────────────────────────────────────────────
+
 /**
- * Recursively expand a DSL node into JSX source.
- *
- * @param {string} dsl - Single DSL token
- * @param {number} indent - Current indentation level
+ * Render a single prop key=value pair for a given target.
+ * @param {string} key
+ * @param {string} value
+ * @param {string} target
  * @returns {string}
  */
-function dslNodeToJSX(dsl, indent = 0) {
+function renderProp(key, value, target) {
+  const isEvent = /^on[A-Z]/.test(key);
+
+  if (isEvent) {
+    // Pass the full camelCase key — each target's wrapper handles stripping
+    return EVENT_PATTERNS[target].wrapper(key, value);
+  }
+
+  if (value === 'true') return key; // boolean attribute
+
+  // Framework-specific binding for non-event props
+  if (target === 'vue' && key !== 'class' && key !== 'id') {
+    // Use :prop binding only for obvious dynamic values (identifiers)
+    if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(value)) return `:${key}="${value}"`;
+    return `${key}="${value}"`;
+  }
+  if (target === 'angular' && key !== 'class' && key !== 'id') {
+    if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(value)) return `[${key}]="${value}"`;
+    return `${key}="${value}"`;
+  }
+  if (USES_JSX_EXPR.has(target) && /^[a-zA-Z_$][a-zA-Z0-9_$.]*$/.test(value) && !/"'/.test(value)) {
+    return `${key}={${value}}`;
+  }
+  return `${key}="${value}"`;
+}
+
+/**
+ * Recursively expand a DSL node into framework-specific source.
+ * @param {string} dsl
+ * @param {string} target
+ * @param {number} indent
+ * @returns {string}
+ */
+function expandNode(dsl, target, indent = 0) {
   const pad = '  '.repeat(indent);
   const childPad = '  '.repeat(indent + 1);
-
   const { tag, id, classes, props, childrenRaw } = parseDSLNode(dsl);
 
-  // Build JSX opening tag
-  let jsx = `${pad}<${tag}`;
+  // For HTML-family targets, PascalCase components become div
+  const isComponent = /^[A-Z]/.test(tag);
+  const renderTag = (target === 'html' && isComponent) ? 'div' : tag;
 
-  if (id) jsx += ` id="${id}"`;
-  if (classes.length > 0) jsx += ` className="${classes.join(' ')}"`;
-
+  // Build opening tag
+  let out = `${pad}<${renderTag}`;
+  if (id) out += ` id="${id}"`;
+  if (classes.length > 0) out += ` ${CLASS_ATTR[target]}="${classes.join(' ')}"`;
   for (const [k, v] of Object.entries(props)) {
-    if (v === 'true') {
-      jsx += ` ${k}`;
-    } else if (/^[a-zA-Z_$]/.test(v) && !/["']/.test(v)) {
-      // Looks like a JS identifier/expression — use {}
-      jsx += ` ${k}={${v}}`;
-    } else {
-      jsx += ` ${k}="${v}"`;
-    }
+    out += ' ' + renderProp(k, v, target);
   }
 
+  // Self-closing void elements
+  if (VOID_ELEMENTS.has(renderTag)) {
+    out += ' />';
+    return out;
+  }
+
+  // No children
   if (!childrenRaw) {
-    jsx += ' />';
-    return jsx;
+    out += USES_JSX_EXPR.has(target) ? ' />' : `></${renderTag}>`;
+    return out;
   }
 
-  jsx += '>';
-
+  out += '>';
   const children = splitChildren(childrenRaw);
   const hasComplexChildren = children.some(c => c.type === 'dsl');
 
   if (!hasComplexChildren) {
-    // Inline text children
-    const text = children.map(c => c.value).join('');
-    jsx += text + `</${tag}>`;
+    out += children.map(c => c.value).join('') + `</${renderTag}>`;
   } else {
-    jsx += '\n';
+    out += '\n';
     for (const child of children) {
-      if (child.type === 'dsl') {
-        jsx += dslNodeToJSX(child.value, indent + 1) + '\n';
-      } else if (child.value.trim()) {
-        jsx += childPad + child.value.trim() + '\n';
-      }
+      if (child.type === 'dsl') out += expandNode(child.value, target, indent + 1) + '\n';
+      else if (child.value.trim()) out += childPad + child.value.trim() + '\n';
     }
-    jsx += pad + `</${tag}>`;
+    out += pad + `</${renderTag}>`;
   }
 
-  return jsx;
+  return out;
 }
 
 /**
- * Recursively expand a DSL node into plain HTML.
- *
- * @param {string} dsl - Single DSL token
- * @param {number} indent - Current indentation level
- * @returns {string}
+ * Split a multi-root DSL string into individual top-level nodes.
+ * @param {string} dsl
+ * @returns {string[]}
  */
-function dslNodeToHTML(dsl, indent = 0) {
-  const pad = '  '.repeat(indent);
-  const childPad = '  '.repeat(indent + 1);
-
-  const { tag, id, classes, props, childrenRaw } = parseDSLNode(dsl);
-
-  // For HTML, PascalCase tags become lowercase (component → div fallback)
-  const htmlTag = /^[A-Z]/.test(tag) ? 'div' : tag;
-
-  let html = `${pad}<${htmlTag}`;
-
-  if (id) html += ` id="${id}"`;
-  if (classes.length > 0) html += ` class="${classes.join(' ')}"`;
-
-  // In HTML, event handlers become data attributes for portability
-  for (const [k, v] of Object.entries(props)) {
-    if (k.startsWith('on')) {
-      html += ` data-${k.toLowerCase()}="${v}"`;
-    } else if (v === 'true') {
-      html += ` ${k}`;
-    } else {
-      html += ` ${k}="${v}"`;
-    }
-  }
-
-  // Void elements
-  const voidElements = new Set(['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr']);
-  if (voidElements.has(htmlTag)) {
-    html += ' />';
-    return html;
-  }
-
-  if (!childrenRaw) {
-    html += `></${htmlTag}>`;
-    return html;
-  }
-
-  html += '>';
-
-  const children = splitChildren(childrenRaw);
-  const hasComplexChildren = children.some(c => c.type === 'dsl');
-
-  if (!hasComplexChildren) {
-    const text = children.map(c => c.value).join('');
-    html += text + `</${htmlTag}>`;
-  } else {
-    html += '\n';
-    for (const child of children) {
-      if (child.type === 'dsl') {
-        html += dslNodeToHTML(child.value, indent + 1) + '\n';
-      } else if (child.value.trim()) {
-        html += childPad + child.value.trim() + '\n';
-      }
-    }
-    html += pad + `</${htmlTag}>`;
-  }
-
-  return html;
+function splitTopLevelNodes(dsl) {
+  const nodes = dsl.trim().split('\n')
+    .map(l => l.trim()).filter(l => l.startsWith('['));
+  return nodes.length > 0 ? nodes : [dsl];
 }
 
 /**
- * Expand a micro-DSL string back into production-ready JSX or HTML.
+ * Expand a micro-DSL string back into production-ready source code.
  *
  * @param {string} dsl - Aimata micro-DSL string
- * @param {'react' | 'html'} targetFramework - Output format
- * @returns {string} - Expanded source code
+ * @param {'react'|'html'|'vue'|'angular'|'svelte'|'solid'} [targetFramework='react']
+ * @returns {string}
  *
  * @example
- * expandFromDSL('[button.px-4.bg-blue-500{onClick=handleClick}|Submit]', 'react')
- * // → '<button className="px-4 bg-blue-500" onClick={handleClick}>Submit</button>'
+ * expandFromDSL('[button.px-4.bg-blue-500{onClick=handleClick}|Submit]', 'vue')
+ * // → '<button class="px-4 bg-blue-500" @click="handleClick">Submit</button>'
  */
 export function expandFromDSL(dsl, targetFramework = 'react') {
   if (typeof dsl !== 'string' || !dsl.trim()) {
     throw new TypeError('expandFromDSL expects a non-empty DSL string');
   }
-  if (targetFramework !== 'react' && targetFramework !== 'html') {
-    throw new TypeError(`targetFramework must be 'react' or 'html', got '${targetFramework}'`);
+  if (!SUPPORTED_TARGETS.has(targetFramework)) {
+    throw new TypeError(
+      `targetFramework must be one of: ${[...SUPPORTED_TARGETS].join(', ')}. Got '${targetFramework}'`
+    );
   }
-
-  // Handle multiple top-level nodes (newline-separated)
-  const topLevelNodes = splitTopLevelNodes(dsl.trim());
-  const expand = targetFramework === 'react' ? dslNodeToJSX : dslNodeToHTML;
-
-  return topLevelNodes.map(n => expand(n, 0)).join('\n');
-}
-
-/**
- * Split a DSL string into top-level nodes (handles multi-root DSL).
- * @param {string} dsl
- * @returns {string[]}
- */
-function splitTopLevelNodes(dsl) {
-  const nodes = [];
-  const lines = dsl.split('\n');
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed.startsWith('[')) nodes.push(trimmed);
-  }
-  return nodes.length > 0 ? nodes : [dsl];
+  const nodes = splitTopLevelNodes(dsl.trim());
+  return nodes.map(n => expandNode(n, targetFramework, 0)).join('\n');
 }
 
 // ─── compile() — AST → string ────────────────────────────────────────────────
@@ -374,17 +313,15 @@ function splitTopLevelNodes(dsl) {
  * Compile an AST produced by `parse()` into a target output format.
  *
  * @param {import('./parser.js').ASTNode[]} ast
- * @param {{ target: 'dsl' | 'react' | 'html' }} options
+ * @param {{ target: 'dsl'|'react'|'html'|'vue'|'angular'|'svelte'|'solid' }} options
  * @returns {string}
  */
 export function compile(ast, options = { target: 'dsl' }) {
   const { target = 'dsl' } = options;
-
-  if (target === 'dsl') {
-    return ast.map(nodeTosDSL).join('\n');
-  }
-
-  // Compile AST → DSL → target expansion
-  const dsl = ast.map(nodeTosDSL).join('\n');
-  return expandFromDSL(dsl, target === 'react' ? 'react' : 'html');
+  if (target === 'dsl') return ast.map(nodeToDSL).join('\n');
+  const dsl = ast.map(nodeToDSL).join('\n');
+  return expandFromDSL(dsl, target);
 }
+
+/** Expose supported targets for tooling */
+export { SUPPORTED_TARGETS };

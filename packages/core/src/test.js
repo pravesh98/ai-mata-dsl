@@ -174,6 +174,60 @@ section('8. Determinism — compress → expand → compress produces identical 
   console.log(`     DSL2: ${dsl2}`);
 }
 
+section('9. Multi-framework expansion from single DSL');
+{
+  const input = `<button className="px-4 py-2 bg-blue-500 text-white rounded" onClick={handleClick}>Submit</button>`;
+  const dsl = compressToDSL(input);
+
+  // React
+  const react = expandFromDSL(dsl, 'react');
+  assertContains(react, 'className=', 'React: uses className');
+  assertContains(react, 'onClick={handleClick}', 'React: onClick JSX expression');
+
+  // Vue
+  const vue = expandFromDSL(dsl, 'vue');
+  assertContains(vue, 'class=', 'Vue: uses class (not className)');
+  assertContains(vue, '@click="handleClick"', 'Vue: @click binding');
+  assertNotContains(vue, 'className', 'Vue: no className');
+
+  // Angular
+  const angular = expandFromDSL(dsl, 'angular');
+  assertContains(angular, 'class=', 'Angular: uses class');
+  assertContains(angular, '(click)="handleClick()"', 'Angular: (click) binding');
+  assertNotContains(angular, 'className', 'Angular: no className');
+
+  // Svelte
+  const svelte = expandFromDSL(dsl, 'svelte');
+  assertContains(svelte, 'class=', 'Svelte: uses class');
+  assertContains(svelte, 'on:click={handleClick}', 'Svelte: on:click binding');
+  assertNotContains(svelte, 'className', 'Svelte: no className');
+
+  // SolidJS
+  const solid = expandFromDSL(dsl, 'solid');
+  assertContains(solid, 'class=', 'Solid: uses class');
+  assertContains(solid, 'onClick={handleClick}', 'Solid: onClick JSX expression');
+
+  // HTML
+  const html = expandFromDSL(dsl, 'html');
+  assertContains(html, 'class=', 'HTML: uses class');
+  assertContains(html, 'data-onclick="handleClick"', 'HTML: data-onclick attribute');
+
+  console.log(`     React  : ${react}`);
+  console.log(`     Vue    : ${vue}`);
+  console.log(`     Angular: ${angular}`);
+  console.log(`     Svelte : ${svelte}`);
+  console.log(`     Solid  : ${solid}`);
+  console.log(`     HTML   : ${html}`);
+}
+
+section('10. Invalid target throws TypeError');
+{
+  let threw = false;
+  try { expandFromDSL('[div|test]', 'ember'); }
+  catch (e) { threw = e instanceof TypeError; }
+  assert(threw, 'Unsupported target throws TypeError');
+}
+
 // ─── Summary ──────────────────────────────────────────────────────────────────
 
 console.log('\n' + '─'.repeat(60));

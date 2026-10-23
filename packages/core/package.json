@@ -1,6 +1,6 @@
 {
   "name": "@aimata-dsl/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Token-optimized micro-DSL compiler for AI-assisted UI generation. Compress JSX/HTML/Tailwind into dense DSL and expand back deterministically.",
   "main": "src/index.js",
   "type": "module",
