@@ -1,13 +1,14 @@
 # Aimata DSL 🧬
 
-> AI-native micro-DSL for frontend UI: compress verbose JSX, HTML, and Tailwind into dense, semantic shorthand and expand it back into production-ready code.
+> Project-wide micro-DSL for AI-assisted frontend work: compress verbose JSX, HTML, Tailwind, and component-heavy UI structures into a compact, semantic shorthand, then expand them back into production-ready code.
 
-Aimata DSL helps AI-assisted coding tools and human developers work with UI code in a much smaller, more structured format. Instead of sending long JSX blocks across prompts or memory, you compress them into a compact DSL, then expand back to React, HTML, Vue, Angular, Svelte, or Solid on demand.
+Aimata DSL is more than a compiler. It is a full compression workflow for UI systems: buttons, cards, forms, tables, data schemas, component state, and repeated frontend patterns that are expensive to send through AI prompts and memory. Instead of pushing large JSX blocks around, you compress them into a compact DSL, then expand back to React, HTML, Vue, Angular, Svelte, or Solid on demand.
 
-- Reduce token waste in AI workflows
-- Preserve structure and round-trip determinism
-- Work with JSX, HTML, and Tailwind without manual rewrites
-- Integrate with Cursor, Claude Code, MCP clients, and Vite
+- Reduce token waste across AI-driven UI workflows
+- Preserve AST structure and round-trip determinism
+- Work with JSX, HTML, Tailwind, and component-heavy UI graphs
+- Support forms, tables, schemas, and stateful UI logic
+- Integrate with Cursor, Claude Code, MCP clients, Vite, and a guided init flow
 
 Live site: https://pravesh98.github.io/ai-mata-dsl/
 
@@ -169,7 +170,9 @@ npm run dev:studio
 npx aimata-dsl init
 ```
 
-This adds the project rule and Vite plugin config automatically.
+This is the project-level setup step. It adds the repo instruction file for AI tooling, creates the default rule for Claude/Cursor-style agents, and wires in the Vite plugin so the project automatically understands and expands Aimata DSL in normal development workflows.
+
+Once initialized, the agent should prefer Aimata shorthand by default when reading or generating UI code in that repository, without needing to import or reconfigure the compiler in every single file.
 
 ---
 

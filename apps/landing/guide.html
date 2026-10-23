@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Guide — Aimata DSL</title>
-  <meta name="description" content="Complete user guide for @aimata-dsl/core — installation, API reference, examples, and integration patterns." />
+  <meta name="description" content="Complete guide for Aimata DSL — project-wide compression workflow for JSX, HTML, Tailwind, forms, tables, schemas, and AI-assisted UI systems." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -66,7 +66,7 @@
     <div class="guide-hero">
       <div class="guide-badge">User Guide</div>
       <h1 class="guide-title">Getting started with<br/><span class="grad">@aimata-dsl/core</span></h1>
-      <p class="guide-sub">Everything you need to compress, expand, parse, and compile UI components using the Aimata micro-DSL.</p>
+      <p class="guide-sub">Everything you need to compress, expand, parse, and compile full UI systems — from buttons and cards to forms, tables, schemas, state logic, and project-wide component patterns using the Aimata micro-DSL.</p>
       <div class="guide-meta">
         <span class="meta-chip">v0.1.0</span>
         <span class="meta-chip">MIT</span>
@@ -108,7 +108,7 @@
     <!-- ── 2. Quick Start ─────────────────────────────────────────── -->
     <section id="quick-start" class="doc-section">
       <h2 class="doc-h2">Quick Start</h2>
-      <p class="doc-p">Import the two main functions and you're ready to go:</p>
+      <p class="doc-p">Import the core functions and start compressing a full project workflow, not just a single component:</p>
 
       <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { compressToDSL, expandFromDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
 
@@ -130,7 +130,12 @@
 <span class="c-kw">const</span> reactCode = expandFromDSL(dsl, <span class="c-str">'react'</span>);
 <span class="c-comment">// → '&lt;button className="px-4 py-2 bg-blue-500 ..." onClick={handleClick}&gt;Submit&lt;/button&gt;'</span>
 
-<span class="c-comment">// 4. Or expand to plain HTML</span>
+<span class="c-comment">// 4. Initialize the project setup flow</span>
+<span class="c-comment">// npx aimata-dsl init</span>
+<span class="c-comment">// This adds repo-level AI guidance for Cursor/Claude</span>
+<span class="c-comment">// and wires the Vite plugin so the project uses Aimata DSL by default.</span>
+
+<span class="c-comment">// 5. Expand to plain HTML</span>
 <span class="c-kw">const</span> htmlCode = expandFromDSL(dsl, <span class="c-str">'html'</span>);
 <span class="c-comment">// → '&lt;button class="px-4 py-2 bg-blue-500 ..." data-onclick="handleClick"&gt;Submit&lt;/button&gt;'</span></code></pre></div>
     </section>
@@ -160,6 +165,11 @@
       <div class="callout callout-tip">
         <span class="callout-icon">💡</span>
         <div>All parts except <code>tag</code> are optional. <code>[div]</code> is valid — it produces <code>&lt;div /&gt;</code>.</div>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">⚙</span>
+        <div><strong>Project default:</strong> run <code>npx aimata-dsl init</code> once in a repo to add the AI rule file and Vite setup. This makes Cursor/Claude-style agents prefer Aimata shorthand automatically for that project, instead of requiring a custom import or per-file setup.</div>
       </div>
     </section>
 
