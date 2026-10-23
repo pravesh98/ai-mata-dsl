@@ -55,15 +55,15 @@ const MCP_MANIFEST = {
     },
     {
       name: 'expand',
-      description: 'Expand Aimata micro-DSL back into production JSX or HTML',
+      description: 'Expand Aimata micro-DSL back into production source code for any framework',
       input_schema: {
         type: 'object',
         properties: {
           dsl: { type: 'string', description: 'Aimata micro-DSL string to expand' },
           target: {
             type: 'string',
-            enum: ['react', 'html'],
-            description: 'Output format (default: react)',
+            enum: ['react', 'html', 'vue', 'angular', 'svelte', 'solid'],
+            description: 'Output framework (default: react)',
           },
         },
         required: ['dsl'],
@@ -161,8 +161,9 @@ async function handleExpand(req, res) {
   }
 
   const target = body.target ?? 'react';
-  if (target !== 'react' && target !== 'html') {
-    return json(res, 400, { error: '`target` must be "react" or "html"' });
+  const VALID_TARGETS = new Set(['react', 'html', 'vue', 'angular', 'svelte', 'solid']);
+  if (!VALID_TARGETS.has(target)) {
+    return json(res, 400, { error: '`target` must be one of: react, html, vue, angular, svelte, solid' });
   }
 
   try {
