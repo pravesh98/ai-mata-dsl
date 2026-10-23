@@ -51,7 +51,7 @@ section('1. Simple element compression');
 {
   const input = `<div className="flex gap-4">Hello</div>`;
   const dsl = compressToDSL(input);
-  assert(dsl.startsWith('[div'), 'DSL starts with [div');
+  assert(dsl.startsWith('[box'), 'DSL starts with [box');
   assertContains(dsl, '.flex.gap-4', 'Classes encoded with dots');
   assertContains(dsl, '|Hello]', 'Text children encoded after pipe');
   console.log(`     Input : ${input}`);
@@ -87,6 +87,28 @@ section('3. Tailwind button round-trip (React)');
   console.log(`     Original : ${original}`);
   console.log(`     DSL      : ${dsl}`);
   console.log(`     Expanded : ${expanded}`);
+}
+
+section('3b. Structural box/btn DSL round-trip');
+{
+  const original = `
+<div class="mx-auto max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-lg">
+  <button type="button" class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500">Save changes</button>
+</div>`.trim();
+
+  const dsl = compressToDSL(original);
+  assertContains(dsl, '[box', 'Wrapper compresses to the box shorthand');
+  assertContains(dsl, '[btn', 'Button compresses to the btn shorthand');
+
+  const expanded = expandFromDSL(dsl, 'react');
+  assertContains(expanded, '<div', 'Expanded box alias restores div');
+  assertContains(expanded, 'className="mx-auto max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-lg"', 'Expanded box wrapper retains classes');
+  assertContains(expanded, '<button', 'Expanded btn alias restores button');
+  assertContains(expanded, 'type="button"', 'Button type attribute preserved');
+  assertContains(expanded, 'Save changes', 'Nested button text preserved');
+
+  console.log(`     DSL: ${dsl}`);
+  console.log(`     Expanded: ${expanded}`);
 }
 
 section('4. Card component round-trip (React)');

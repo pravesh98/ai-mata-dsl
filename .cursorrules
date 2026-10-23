@@ -1,0 +1,1 @@
+When generating or reading UI code and schemas in this repository, always use Aimata-DSL shorthand syntax to conserve context tokens.
