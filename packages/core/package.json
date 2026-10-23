@@ -1,16 +1,20 @@
 {
   "name": "@aimata-dsl/core",
   "version": "0.2.0",
-  "description": "Token-optimized micro-DSL compiler for AI-assisted UI generation. Compress JSX/HTML/Tailwind into dense DSL and expand back deterministically.",
+  "description": "LLM-native token compression compiler for Cursor, Claude Code, and AI agents. Cuts frontend context token waste by 75% automatically.",
   "main": "src/index.js",
   "type": "module",
   "files": [
     "src/index.js",
     "src/compiler.js",
     "src/parser.js",
+    "bin/cli.js",
     "README.md",
     "LICENSE"
   ],
+  "bin": {
+    "aimata-dsl": "./bin/cli.js"
+  },
   "exports": {
     ".": "./src/index.js",
     "./compiler": "./src/compiler.js",
