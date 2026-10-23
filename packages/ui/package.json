@@ -4,6 +4,11 @@
   "description": "Aimata DSL: token-optimized React component library primitives",
   "main": "src/index.js",
   "type": "module",
+  "files": [
+    "src/**/*.js",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "check": "node --check src/index.js"
   },
@@ -12,7 +17,7 @@
     "react-dom": ">=18.0.0"
   },
   "dependencies": {
-    "@aimata-dsl/core": "workspace:*"
+    "@aimata-dsl/core": "^0.2.0"
   },
   "keywords": [
     "aimata",
@@ -26,5 +31,17 @@
   "exports": {
     ".": "./src/index.js",
     "./components": "./src/components/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pravesh98/ai-mata-dsl.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pravesh98/ai-mata-dsl/issues"
+  },
+  "homepage": "https://pravesh98.github.io/ai-mata-dsl",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

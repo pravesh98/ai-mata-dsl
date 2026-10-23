@@ -1,125 +1,208 @@
 # Aimata DSL 🧬
 
-> **LLM-native token compression compiler for Cursor, Claude Code, and AI agents** — cut frontend context waste by up to 75% automatically, then expand back into clean React/HTML with zero manual translation.
+> AI-native micro-DSL for frontend UI: compress verbose JSX, HTML, and Tailwind into dense, semantic shorthand and expand it back into production-ready code.
+
+Aimata DSL helps AI-assisted coding tools and human developers work with UI code in a much smaller, more structured format. Instead of sending long JSX blocks across prompts or memory, you compress them into a compact DSL, then expand back to React, HTML, Vue, Angular, Svelte, or Solid on demand.
+
+- Reduce token waste in AI workflows
+- Preserve structure and round-trip determinism
+- Work with JSX, HTML, and Tailwind without manual rewrites
+- Integrate with Cursor, Claude Code, MCP clients, and Vite
+
+Live site: https://pravesh98.github.io/ai-mata-dsl/
+
+Additional project pages:
+- Landing page: https://pravesh98.github.io/ai-mata-dsl/
+- Guide: https://pravesh98.github.io/ai-mata-dsl/apps/landing/guide.html
+- Studio: https://pravesh98.github.io/ai-mata-dsl/apps/studio/index.html
+
+---
 
 ## Install
 
 ```bash
-npm i @aimata-dsl/core
+npm install @aimata-dsl/core
 ```
-
-## One-time setup
-
-Add this rule to your project root:
-
-```text
-When generating or reading UI code and schemas in this repository, always use Aimata-DSL shorthand syntax to conserve context tokens.
-```
-
-This makes Cursor, Claude Code, and other AI tools prefer compact Aimata-DSL automatically in prompts and generated code.
 
 ---
 
-## Architecture
+## Quick start
 
-```
-aimata-dsl/
-├── packages/
-│   ├── core/          # @aimata-dsl/core       — compiler & AST transforms
-│   ├── ui/            # @aimata-dsl/ui         — token-optimized component primitives
-│   ├── mcp-server/    # @aimata-dsl/mcp-server — AI agent bridge / local MCP server
-│   └── vite-plugin/   # @aimata-dsl/vite-plugin — auto-expands DSL in local builds
-├── apps/
-│   └── studio/        # aimata-studio          — interactive benchmark playground
-├── examples/
-│   └── zero-config-demo
-├── .cursorrules       # repo rule for AI agents to prefer Aimata shorthand
-└── README.md
-```
+```js
+import { compressToDSL, expandFromDSL } from '@aimata-dsl/core';
 
-## Micro-DSL Syntax
+const dsl = compressToDSL(`
+  <button className="px-4 py-2 bg-blue-500 text-white rounded" onClick={handleClick}>
+    Submit
+  </button>
+`);
 
-The Aimata micro-DSL encodes component trees in a compact bracket notation:
+console.log(dsl);
+// [button.px-4.py-2.bg-blue-500.text-white.rounded{onClick=handleClick}|Submit]
 
-```
-[tag#id.class1.class2{prop=val,data-x=y}|child text or [nested]]
+const react = expandFromDSL(dsl, 'react');
+console.log(react);
+// <button className="px-4 py-2 bg-blue-500 text-white rounded" onClick={handleClick}>Submit</button>
 ```
 
-| Part | Meaning |
-|------|---------|
-| `tag` | HTML tag or component name |
-| `#id` | Element ID (optional) |
-| `.cls` | CSS/Tailwind class(es), dot-separated |
-| `{k=v}` | Props/attributes as `key=value` pairs |
-| `\|...` | Children — text or nested DSL nodes |
+---
 
-**Example:** A Tailwind button:
+## Why it exists
 
-```jsx
-// Verbose JSX (82 tokens)
-<button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={handleClick}>
-  Submit
-</button>
+Modern AI coding tools are expensive because they spend tokens on repetitive UI syntax. Aimata DSL gives you a lossless, compact representation for UI structure:
+
+```text
+[tag#id.class1.class2{prop=value,other=value}|children]
 ```
 
-Compresses to Aimata DSL (18 tokens):
+That means:
+- tags are compact
+- classes are dot-separated
+- props are encoded as key=value pairs
+- nested structure stays explicit
+- expansion is deterministic and reversible
+
+---
+
+## Micro-DSL syntax
+
+```text
+[tag#id.class1.class2{prop=value,other=value}|child text or [nested]]
 ```
-[button.px-4.py-2.bg-blue-500.text-white.rounded.hover:bg-blue-600{onClick=handleClick}|Submit]
+
+| Part | Meaning | Example |
+| --- | --- | --- |
+| `tag` | HTML tag or component name | `button`, `div`, `Card` |
+| `#id` | Element ID | `#hero-card` |
+| `.cls` | Tailwind or CSS classes | `.px-4.py-2.bg-blue-500` |
+| `{k=v}` | Props / attributes | `{onClick=handleClick,type=submit}` |
+| `|...` | Children content | `|Submit` or `|[span.text-sm|Hello]` |
+
+Example:
+
+```text
+[button.px-4.py-2.bg-blue-500.text-white.rounded.hover:bg-blue-600{onClick=handleClick,type=submit}|Submit]
 ```
+
+This compresses a verbose JSX button into a dense, machine-readable shorthand that is easy to pass to models and easy to re-expand when needed.
 
 ---
 
 ## Packages
 
-### `@aimata-dsl/core`
-The compiler engine. Provides:
-- `compressToDSL(code)` — Converts JSX/HTML → micro-DSL
-- `expandFromDSL(dsl, targetFramework)` — Expands micro-DSL → JSX or HTML
-- `parse(code)` — Returns an AST for a JSX/HTML string
-- `compile(ast, options)` — Compiles an AST to a target output
+### Core compiler
+Package: `@aimata-dsl/core`
 
-### `@aimata-dsl/ui`
-Primitive React components built DSL-first. All components expose their DSL signature via `Component.dsl` for introspection and tooling.
+The main engine for parsing, compressing, and expanding UI syntax.
 
-### `@aimata-dsl/mcp-server`
-An MCP-compatible HTTP server that exposes the compiler as a tool callable by AI assistants (Claude, Gemini, GPT-4, etc.).
+Included APIs:
+- `compressToDSL(code)`
+- `expandFromDSL(dsl, target)`
+- `parse(source)`
+- `compile(ast, options)`
 
-**Endpoints:**
-- `POST /compress` — `{ code: string }` → `{ dsl: string }`
-- `POST /expand` — `{ dsl: string, target: "react"|"html" }` → `{ code: string }`
-- `GET /health`
+See [packages/core](packages/core) and [packages/core/README.md](packages/core/README.md).
 
-### `apps/studio`
-A browser-based split-pane playground where you can paste any JSX/HTML and see the compressed DSL in real time, and vice versa.
+### UI primitives
+Package: `@aimata-dsl/ui`
+
+DSL-first metadata and utility primitives for React component usage and token-friendly component contracts.
+
+See [packages/ui](packages/ui).
+
+### MCP server
+Package: `@aimata-dsl/mcp-server`
+
+An MCP-compatible HTTP server that exposes compression and expansion as AI tool endpoints for Claude, Cursor, and other AI workflows.
+
+See [packages/mcp-server](packages/mcp-server).
+
+### Vite plugin
+Package: `@aimata-dsl/vite-plugin`
+
+A Vite transform hook that auto-expands Aimata DSL during local development or build workflows.
+
+See [packages/vite-plugin](packages/vite-plugin).
+
+### Studio
+App: [apps/studio](apps/studio)
+
+A browser-based playground for compressing and expanding JSX/HTML with a split-pane interface.
+
+### Landing + guide
+- [apps/landing](apps/landing)
+- [apps/landing/guide.html](apps/landing/guide.html)
+
+The landing page explains the project and the guide walks through the syntax and usage flow.
 
 ---
 
-## Getting Started
+## Developer workflow
 
-### Prerequisites
-- Node.js ≥ 18
-- npm ≥ 9 (or pnpm)
+### Install the repo
 
-### Install
 ```bash
 npm install
 ```
 
-### Run Tests
+### Run the core tests
+
 ```bash
-npm test
-# or just the core package
 cd packages/core && node src/test.js
 ```
 
-### Start the MCP Server
+### Start the MCP server
+
 ```bash
 npm run dev:server
 ```
 
-### Open the Studio
+### Open the studio
+
 ```bash
 npm run dev:studio
+```
+
+### Initialize a Vite app
+
+```bash
+npx aimata-dsl init
+```
+
+This adds the project rule and Vite plugin config automatically.
+
+---
+
+## Editor rule
+
+Add this to your project root for AI tooling guidance:
+
+```text
+When generating or reading UI code and schemas in this repository, always use Aimata-DSL shorthand syntax to conserve context tokens.
+```
+
+This is the recommended setup for Cursor, Claude Code, and similar AI-assisted environments.
+
+---
+
+## Repository structure
+
+```text
+aimata-dsl/
+├── apps/
+│   ├── landing/
+│   └── studio/
+├── examples/
+├── packages/
+│   ├── core/
+│   ├── mcp-server/
+│   ├── ui/
+│   └── vite-plugin/
+├── .cursorrules
+├── LICENSE
+├── README.md
+├── package.json
+└── .github/
 ```
 
 ---

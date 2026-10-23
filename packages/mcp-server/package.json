@@ -4,13 +4,18 @@
   "description": "Aimata DSL: Model Context Protocol integration server",
   "main": "src/index.js",
   "type": "module",
+  "files": [
+    "src/**/*.js",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "check": "node --check src/index.js"
   },
   "dependencies": {
-    "@aimata-dsl/core": "workspace:*"
+    "@aimata-dsl/core": "^0.2.0"
   },
   "keywords": [
     "aimata",
@@ -20,5 +25,17 @@
     "server",
     "ai"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pravesh98/ai-mata-dsl.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pravesh98/ai-mata-dsl/issues"
+  },
+  "homepage": "https://pravesh98.github.io/ai-mata-dsl",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
 }

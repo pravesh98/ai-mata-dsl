@@ -1,7 +1,7 @@
 {
   "name": "@aimata-dsl/core",
   "version": "0.2.0",
-  "description": "LLM-native token compression compiler for Cursor, Claude Code, and AI agents. Cuts frontend context token waste by 75% automatically.",
+  "description": "Micro-DSL compiler for compressing JSX, HTML, and Tailwind into compact semantic UI shorthand, then expanding it back for React, HTML, and AI-assisted workflows.",
   "main": "src/index.js",
   "type": "module",
   "files": [
