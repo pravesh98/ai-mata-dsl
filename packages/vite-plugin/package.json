@@ -1,0 +1,29 @@
+{
+  "name": "@aimata-dsl/vite-plugin",
+  "version": "0.1.0",
+  "description": "Vite plugin that expands Aimata micro-DSL into standard React/HTML before build or dev transforms.",
+  "main": "src/index.js",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "check": "node --check src/index.js"
+  },
+  "peerDependencies": {
+    "vite": "^5.0.0 || ^6.0.0"
+  },
+  "dependencies": {
+    "@aimata-dsl/core": "workspace:*"
+  },
+  "keywords": [
+    "aimata",
+    "dsl",
+    "vite",
+    "plugin",
+    "react",
+    "html",
+    "token-compression"
+  ],
+  "license": "MIT"
+}

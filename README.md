@@ -1,6 +1,22 @@
 # Aimata DSL 🧬
 
-> **Token-optimized micro-DSL for AI-assisted UI generation** — compress verbose JSX/HTML/Tailwind into a dense, lossless intermediate representation and expand it back on demand.
+> **LLM-native token compression compiler for Cursor, Claude Code, and AI agents** — cut frontend context waste by up to 75% automatically, then expand back into clean React/HTML with zero manual translation.
+
+## Install
+
+```bash
+npm i @aimata-dsl/core
+```
+
+## One-time setup
+
+Add this rule to your project root:
+
+```text
+When generating or reading UI code and schemas in this repository, always use Aimata-DSL shorthand syntax to conserve context tokens.
+```
+
+This makes Cursor, Claude Code, and other AI tools prefer compact Aimata-DSL automatically in prompts and generated code.
 
 ---
 
@@ -9,11 +25,16 @@
 ```
 aimata-dsl/
 ├── packages/
-│   ├── core/          # @aimata-dsl/core  — AST compiler & token compression engine
-│   ├── ui/            # @aimata-dsl/ui    — Token-optimized component library primitives
-│   └── mcp-server/    # @aimata-dsl/mcp-server — MCP integration server
-└── apps/
-    └── studio/        # aimata-studio — Interactive web playground & benchmark studio
+│   ├── core/          # @aimata-dsl/core       — compiler & AST transforms
+│   ├── ui/            # @aimata-dsl/ui         — token-optimized component primitives
+│   ├── mcp-server/    # @aimata-dsl/mcp-server — AI agent bridge / local MCP server
+│   └── vite-plugin/   # @aimata-dsl/vite-plugin — auto-expands DSL in local builds
+├── apps/
+│   └── studio/        # aimata-studio          — interactive benchmark playground
+├── examples/
+│   └── zero-config-demo
+├── .cursorrules       # repo rule for AI agents to prefer Aimata shorthand
+└── README.md
 ```
 
 ## Micro-DSL Syntax
