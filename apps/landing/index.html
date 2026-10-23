@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aimata DSL — Token-Optimized UI Micro-Language for AI</title>
+  <meta name="description" content="Compress verbose JSX, HTML, and Tailwind into a dense micro-DSL. Expand back to production code. Built for AI-assisted UI generation." />
+  <meta property="og:title" content="Aimata DSL" />
+  <meta property="og:description" content="Token-optimized micro-DSL for AI-assisted UI generation." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── Nav ─────────────────────────────────────────────────────────────────── -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo" aria-label="Aimata DSL home">
+      <div class="nav-logo-icon" aria-hidden="true">⬡</div>
+      <span>aimata<strong>dsl</strong></span>
+    </a>
+    <div class="nav-links">
+      <a href="#how-it-works" class="nav-link">How it works</a>
+      <a href="#api" class="nav-link">API</a>
+      <a href="guide.html" class="nav-link">Guide</a>
+      <a href="#packages" class="nav-link">Packages</a>
+      <a href="https://github.com/pravesh98/ai-mata-dsl" class="nav-link nav-link-gh" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="../studio/index.html" class="nav-cta" id="open-studio-nav">Try Studio →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────────── -->
+<header class="hero" role="banner">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+    <div class="hero-grid"></div>
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-badge" aria-label="Current version">
+      <span class="badge-dot" aria-hidden="true"></span>
+      v0.1.0 — Now on npm
+    </div>
+
+    <h1 class="hero-title">
+      The micro&#8209;DSL for<br/>
+      <span class="gradient-text">AI&#8209;assisted UI</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      Compress verbose JSX, HTML, and Tailwind into a dense, lossless notation.<br/>
+      Expand back to production code in any framework. Zero dependencies.
+    </p>
+
+    <div class="hero-actions">
+      <div class="install-box" aria-label="npm install command">
+        <span class="install-prefix" aria-hidden="true">$</span>
+        <code id="install-cmd" class="install-cmd">npm install @aimata-dsl/core</code>
+        <button class="install-copy" id="copy-install" aria-label="Copy install command" title="Copy to clipboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+      <a href="../studio/index.html" class="btn-primary" id="try-studio-hero">Try the Studio →</a>
+    </div>
+
+    <div class="hero-stats" role="list" aria-label="Key statistics">
+      <div class="hero-stat" role="listitem">
+        <span class="stat-num">0</span>
+        <span class="stat-label">Dependencies</span>
+      </div>
+      <div class="hero-stat-sep" aria-hidden="true"></div>
+      <div class="hero-stat" role="listitem">
+        <span class="stat-num">~2.6×</span>
+        <span class="stat-label">Token compression</span>
+      </div>
+      <div class="hero-stat-sep" aria-hidden="true"></div>
+      <div class="hero-stat" role="listitem">
+        <span class="stat-num">38</span>
+        <span class="stat-label">Tests passing</span>
+      </div>
+      <div class="hero-stat-sep" aria-hidden="true"></div>
+      <div class="hero-stat" role="listitem">
+        <span class="stat-num">Node + Browser</span>
+        <span class="stat-label">ESM compatible</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Live Demo ─────────────────────────────────────────────────────────────── -->
+<section class="section demo-section" id="demo" aria-labelledby="demo-heading">
+  <div class="container">
+    <div class="section-label" aria-hidden="true">// Live Demo</div>
+    <h2 id="demo-heading" class="section-title">See it in action</h2>
+    <p class="section-sub">Paste any JSX or HTML — watch it compress in real time.</p>
+
+    <div class="demo-grid">
+      <!-- Input -->
+      <div class="demo-pane">
+        <div class="demo-pane-header">
+          <span class="demo-pane-dot blue" aria-hidden="true"></span>
+          <span class="demo-pane-label">Input JSX</span>
+          <div class="demo-tabs" role="tablist" aria-label="Input examples">
+            <button class="demo-tab active" role="tab" aria-selected="true" data-example="button" id="tab-button">Button</button>
+            <button class="demo-tab" role="tab" aria-selected="false" data-example="card" id="tab-card">Card</button>
+            <button class="demo-tab" role="tab" aria-selected="false" data-example="nav" id="tab-nav">Nav</button>
+          </div>
+        </div>
+        <textarea
+          id="demo-input"
+          class="demo-editor"
+          spellcheck="false"
+          aria-label="JSX input"
+          aria-describedby="demo-heading"
+        ></textarea>
+      </div>
+
+      <!-- Arrow -->
+      <div class="demo-arrow" aria-hidden="true">
+        <div class="arrow-line"></div>
+        <div class="arrow-label">micro-DSL</div>
+        <div class="arrow-line"></div>
+      </div>
+
+      <!-- DSL Output -->
+      <div class="demo-pane">
+        <div class="demo-pane-header">
+          <span class="demo-pane-dot cyan" aria-hidden="true"></span>
+          <span class="demo-pane-label">Aimata DSL</span>
+          <span class="demo-ratio" id="demo-ratio" aria-live="polite"></span>
+        </div>
+        <div id="demo-dsl" class="demo-editor demo-output" aria-live="polite" aria-label="Compressed DSL output"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ──────────────────────────────────────────────────────────── -->
+<section class="section" id="how-it-works" aria-labelledby="how-heading">
+  <div class="container">
+    <div class="section-label" aria-hidden="true">// How it works</div>
+    <h2 id="how-heading" class="section-title">Three steps, one pipeline</h2>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num" aria-hidden="true">01</div>
+        <div class="step-icon" aria-hidden="true">⬇</div>
+        <h3 class="step-title">Parse</h3>
+        <p class="step-body">Your JSX or HTML is tokenized and walked into a lightweight AST — no Babel, no external parsers.</p>
+        <div class="step-code">
+          <code>parse(source) → ASTNode[]</code>
+        </div>
+      </div>
+
+      <div class="step-connector" aria-hidden="true">→</div>
+
+      <div class="step-card">
+        <div class="step-num" aria-hidden="true">02</div>
+        <div class="step-icon" aria-hidden="true">⬡</div>
+        <h3 class="step-title">Compress</h3>
+        <p class="step-body">The AST is serialized into the bracket micro-DSL. Tags, IDs, classes, props, and children — all encoded losslessly.</p>
+        <div class="step-code">
+          <code>compressToDSL(code) → string</code>
+        </div>
+      </div>
+
+      <div class="step-connector" aria-hidden="true">→</div>
+
+      <div class="step-card">
+        <div class="step-num" aria-hidden="true">03</div>
+        <div class="step-icon" aria-hidden="true">↑</div>
+        <h3 class="step-title">Expand</h3>
+        <p class="step-body">Expand back to production React JSX or plain HTML. Deterministic — compress → expand → compress gives identical DSL.</p>
+        <div class="step-code">
+          <code>expandFromDSL(dsl, 'react' | 'html')</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DSL Syntax ─────────────────────────────────────────────────────────────── -->
+<section class="section syntax-section" aria-labelledby="syntax-heading">
+  <div class="container">
+    <div class="section-label" aria-hidden="true">// DSL Syntax</div>
+    <h2 id="syntax-heading" class="section-title">The notation</h2>
+
+    <div class="syntax-anatomy">
+      <div class="anatomy-code" aria-label="DSL syntax anatomy">
+        <span class="at tag">[button</span><span class="at id">#submit-btn</span><span class="at cls">.px-4.py-2.bg-blue-500.text-white</span><span class="at props">{onClick=handleClick,type=submit}</span><span class="at pipe">|</span><span class="at children">Submit</span><span class="at tag">]</span>
+      </div>
+      <div class="anatomy-labels" aria-hidden="true">
+        <div class="anatomy-label" style="left:2%"><div class="al-line"></div>tag</div>
+        <div class="anatomy-label" style="left:16%"><div class="al-line"></div>id</div>
+        <div class="anatomy-label" style="left:30%"><div class="al-line"></div>classes</div>
+        <div class="anatomy-label" style="left:60%"><div class="al-line"></div>props</div>
+        <div class="anatomy-label" style="left:80%"><div class="al-line"></div>children</div>
+      </div>
+    </div>
+
+    <div class="syntax-table-wrap">
+      <table class="syntax-table" aria-label="DSL syntax reference">
+        <thead>
+          <tr><th>Part</th><th>Syntax</th><th>Example</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tag</td><td><code>tag</code></td><td><code>[div|...]</code></td><td>Any HTML tag or PascalCase component</td></tr>
+          <tr><td>ID</td><td><code>#id</code></td><td><code>[div#hero|...]</code></td><td>Maps to <code>id=""</code> attribute</td></tr>
+          <tr><td>Classes</td><td><code>.cls1.cls2</code></td><td><code>[div.flex.gap-4|...]</code></td><td>Dot-separated, full Tailwind supported</td></tr>
+          <tr><td>Props</td><td><code>{k=v,k2=v2}</code></td><td><code>{onClick=fn,type=submit}</code></td><td>Comma-separated key=value pairs</td></tr>
+          <tr><td>Children</td><td><code>|...</code></td><td><code>|text or [nested]</code></td><td>Text or nested DSL nodes</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── API Reference ──────────────────────────────────────────────────────────── -->
+<section class="section" id="api" aria-labelledby="api-heading">
+  <div class="container">
+    <div class="section-label" aria-hidden="true">// API Reference</div>
+    <h2 id="api-heading" class="section-title">Full API</h2>
+
+    <div class="api-grid">
+      <div class="api-card">
+        <div class="api-sig"><code><span class="api-fn">compressToDSL</span>(<span class="api-param">code</span>: string): string</code></div>
+        <p class="api-desc">Converts JSX or HTML source into Aimata micro-DSL notation. Accepts any well-formed JSX/HTML string.</p>
+        <div class="api-example">
+<pre><code><span class="c-import">import</span> { compressToDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+compressToDSL(<span class="c-str">'&lt;div className="flex gap-4"&gt;Hi&lt;/div&gt;'</span>);
+<span class="c-comment">// → '[div.flex.gap-4|Hi]'</span></code></pre>
+        </div>
+      </div>
+
+      <div class="api-card">
+        <div class="api-sig"><code><span class="api-fn">expandFromDSL</span>(<span class="api-param">dsl</span>: string, <span class="api-param">target</span>?: <span class="api-type">'react'</span> | <span class="api-type">'html'</span>): string</code></div>
+        <p class="api-desc">Expands micro-DSL back to JSX or HTML. React mode uses <code>className</code>/<code>&#123;fn&#125;</code>. HTML mode uses <code>class</code>/<code>data-on*</code>.</p>
+        <div class="api-example">
+<pre><code><span class="c-import">import</span> { expandFromDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+expandFromDSL(<span class="c-str">'[button.btn{onClick=go}|Click]'</span>, <span class="c-str">'react'</span>);
+<span class="c-comment">// → '&lt;button className="btn" onClick={go}&gt;Click&lt;/button&gt;'</span>
+
+expandFromDSL(<span class="c-str">'[button.btn{onClick=go}|Click]'</span>, <span class="c-str">'html'</span>);
+<span class="c-comment">// → '&lt;button class="btn" data-onclick="go"&gt;Click&lt;/button&gt;'</span></code></pre>
+        </div>
+      </div>
+
+      <div class="api-card">
+        <div class="api-sig"><code><span class="api-fn">parse</span>(<span class="api-param">source</span>: string): ASTNode[]</code></div>
+        <p class="api-desc">Tokenizes and parses JSX/HTML into a plain-object AST. Useful for custom analysis, class extraction, or tooling.</p>
+        <div class="api-example">
+<pre><code><span class="c-import">import</span> { parse } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-kw">const</span> [root] = parse(<span class="c-str">'&lt;div className="flex"&gt;&lt;/div&gt;'</span>);
+root.tag;     <span class="c-comment">// 'div'</span>
+root.classes; <span class="c-comment">// ['flex']</span></code></pre>
+        </div>
+      </div>
+
+      <div class="api-card">
+        <div class="api-sig"><code><span class="api-fn">compile</span>(<span class="api-param">ast</span>: ASTNode[], <span class="api-param">opts</span>?: &#123; target: <span class="api-type">'dsl'</span> | <span class="api-type">'react'</span> | <span class="api-type">'html'</span> &#125;): string</code></div>
+        <p class="api-desc">Compiles an AST directly to any target. Skips the parse step when you already have an AST from <code>parse()</code>.</p>
+        <div class="api-example">
+<pre><code><span class="c-import">import</span> { parse, compile } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-kw">const</span> ast = parse(<span class="c-str">'&lt;nav className="flex"&gt;&lt;/nav&gt;'</span>);
+compile(ast, { target: <span class="c-str">'dsl'</span> });   <span class="c-comment">// '[nav.flex]'</span>
+compile(ast, { target: <span class="c-str">'html'</span> });  <span class="c-comment">// '&lt;nav class="flex"&gt;&lt;/nav&gt;'</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Packages ───────────────────────────────────────────────────────────────── -->
+<section class="section packages-section" id="packages" aria-labelledby="pkg-heading">
+  <div class="container">
+    <div class="section-label" aria-hidden="true">// Packages</div>
+    <h2 id="pkg-heading" class="section-title">The ecosystem</h2>
+
+    <div class="pkg-grid">
+      <div class="pkg-card pkg-card-featured">
+        <div class="pkg-header">
+          <span class="pkg-icon" aria-hidden="true">⬡</span>
+          <div>
+            <div class="pkg-name">@aimata-dsl/core</div>
+            <div class="pkg-status pkg-status-live">● Live on npm</div>
+          </div>
+        </div>
+        <p class="pkg-desc">The AST compiler and token compression engine. Zero dependencies. Works in Node, browser, Deno, and Bun.</p>
+        <div class="pkg-install">
+          <code>npm install @aimata-dsl/core</code>
+          <button class="pkg-copy" data-copy="npm install @aimata-dsl/core" aria-label="Copy install command">⎘</button>
+        </div>
+        <div class="pkg-features">
+          <span>✓ compressToDSL</span>
+          <span>✓ expandFromDSL</span>
+          <span>✓ parse / compile</span>
+          <span>✓ 0 deps</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-header">
+          <span class="pkg-icon" aria-hidden="true">◈</span>
+          <div>
+            <div class="pkg-name">@aimata-dsl/ui</div>
+            <div class="pkg-status pkg-status-soon">◌ Coming soon</div>
+          </div>
+        </div>
+        <p class="pkg-desc">Token-optimized React component primitives. Every component exposes its own DSL signature for tooling and AI introspection.</p>
+        <div class="pkg-features">
+          <span>◌ Button, Card, Input</span>
+          <span>◌ .dsl introspection</span>
+          <span>◌ Tailwind variants</span>
+        </div>
+      </div>
+
+      <div class="pkg-card">
+        <div class="pkg-header">
+          <span class="pkg-icon" aria-hidden="true">⊕</span>
+          <div>
+            <div class="pkg-name">@aimata-dsl/mcp-server</div>
+            <div class="pkg-status pkg-status-soon">◌ Coming soon</div>
+          </div>
+        </div>
+        <p class="pkg-desc">MCP-compatible HTTP server. Register the compiler as a tool in Claude, Gemini, or any MCP-enabled AI assistant.</p>
+        <div class="pkg-features">
+          <span>◌ POST /compress</span>
+          <span>◌ POST /expand</span>
+          <span>◌ GET /manifest</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Use Cases ─────────────────────────────────────────────────────────────── -->
+<section class="section" aria-labelledby="usecases-heading">
+  <div class="container">
+    <div class="section-label" aria-hidden="true">// Use Cases</div>
+    <h2 id="usecases-heading" class="section-title">Built for AI workflows</h2>
+
+    <div class="uc-grid">
+      <div class="uc-card">
+        <div class="uc-icon" aria-hidden="true">🤖</div>
+        <h3 class="uc-title">AI Prompt Compression</h3>
+        <p class="uc-body">Send DSL to your LLM instead of raw JSX — 2-3× fewer tokens, lower cost, same information.</p>
+        <pre class="uc-code"><code><span class="c-comment">// Compress before sending to AI</span>
+<span class="c-kw">const</span> prompt = <span class="c-str">`Edit: <span class="c-tmpl">${compressToDSL(myUI)}</span>`</span>;
+
+<span class="c-comment">// Expand AI's DSL response</span>
+<span class="c-kw">const</span> updated = expandFromDSL(aiReply, <span class="c-str">'react'</span>);</code></pre>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-icon" aria-hidden="true">🎨</div>
+        <h3 class="uc-title">Design Token Extraction</h3>
+        <p class="uc-body">Parse any component and extract all classes, IDs, and props programmatically.</p>
+        <pre class="uc-code"><code><span class="c-kw">const</span> [root] = parse(myComponent);
+<span class="c-kw">const</span> tokens = root.classes;
+<span class="c-comment">// ['rounded-xl', 'shadow-lg', 'p-6', ...]</span></code></pre>
+      </div>
+
+      <div class="uc-card">
+        <div class="uc-icon" aria-hidden="true">⚡</div>
+        <h3 class="uc-title">Cross-Framework Output</h3>
+        <p class="uc-body">Write once in DSL, export to any framework. React, plain HTML, and more targets coming.</p>
+        <pre class="uc-code"><code><span class="c-kw">const</span> dsl = compressToDSL(reactComp);
+expandFromDSL(dsl, <span class="c-str">'react'</span>);  <span class="c-comment">// JSX</span>
+expandFromDSL(dsl, <span class="c-str">'html'</span>);   <span class="c-comment">// HTML</span></code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ───────────────────────────────────────────────────────────────────── -->
+<section class="section cta-section" aria-labelledby="cta-heading">
+  <div class="container">
+    <div class="cta-card">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <h2 id="cta-heading" class="cta-title">Ready to compress?</h2>
+      <p class="cta-sub">Try the interactive Studio or install the package right now.</p>
+      <div class="cta-actions">
+        <a href="../studio/index.html" class="btn-primary" id="cta-studio">Open Studio →</a>
+        <a href="https://github.com/pravesh98/ai-mata-dsl" class="btn-outline" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+      </div>
+      <div class="cta-install">
+        <code>npm install @aimata-dsl/core</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────────── -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="nav-logo-icon small" aria-hidden="true">⬡</div>
+        <span><strong>aimata</strong>dsl</span>
+        <span class="footer-version">v0.1.0</span>
+      </div>
+      <div class="footer-links">
+        <a href="https://www.npmjs.com/package/@aimata-dsl/core" target="_blank" rel="noopener noreferrer" class="footer-link">npm</a>
+        <a href="https://github.com/pravesh98/ai-mata-dsl" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+        <a href="#api" class="footer-link">Docs</a>
+        <a href="../studio/index.html" class="footer-link">Studio</a>
+      </div>
+      <div class="footer-copy">MIT © 2026 Pravesh Shukla</div>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>

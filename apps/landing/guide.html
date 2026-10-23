@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guide — Aimata DSL</title>
+  <meta name="description" content="Complete user guide for @aimata-dsl/core — installation, API reference, examples, and integration patterns." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="guide.css" />
+</head>
+<body>
+
+<!-- ── Nav ──────────────────────────────────────────────────────────── -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo" aria-label="Aimata DSL home">
+      <div class="nav-logo-icon" aria-hidden="true">⬡</div>
+      <span>aimata<strong>dsl</strong></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="guide.html" class="nav-link active" aria-current="page">Guide</a>
+      <a href="https://www.npmjs.com/package/@aimata-dsl/core" class="nav-link" target="_blank" rel="noopener">npm</a>
+      <a href="https://github.com/pravesh98/ai-mata-dsl" class="nav-link" target="_blank" rel="noopener">GitHub</a>
+      <a href="../studio/index.html" class="nav-cta">Try Studio →</a>
+    </div>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- ── Sidebar TOC ─────────────────────────────────────────────── -->
+  <aside class="sidebar" role="complementary" aria-label="Table of contents">
+    <div class="sidebar-inner">
+      <div class="toc-label">On this page</div>
+      <nav class="toc" aria-label="Table of contents">
+        <a href="#install" class="toc-link">Installation</a>
+        <a href="#quick-start" class="toc-link">Quick Start</a>
+        <a href="#dsl-syntax" class="toc-link">DSL Syntax</a>
+        <a href="#api-compress" class="toc-link indent">compressToDSL()</a>
+        <a href="#api-expand" class="toc-link indent">expandFromDSL()</a>
+        <a href="#api-parse" class="toc-link indent">parse()</a>
+        <a href="#api-compile" class="toc-link indent">compile()</a>
+        <a href="#examples" class="toc-link">Examples</a>
+        <a href="#ex-button" class="toc-link indent">Button</a>
+        <a href="#ex-card" class="toc-link indent">Card</a>
+        <a href="#ex-nav" class="toc-link indent">Navigation</a>
+        <a href="#ex-form" class="toc-link indent">Form</a>
+        <a href="#patterns" class="toc-link">Integration Patterns</a>
+        <a href="#pat-ai" class="toc-link indent">AI Prompts</a>
+        <a href="#pat-extract" class="toc-link indent">Token Extraction</a>
+        <a href="#pat-crossfw" class="toc-link indent">Cross-Framework</a>
+        <a href="#ast" class="toc-link">AST Reference</a>
+        <a href="#errors" class="toc-link">Error Handling</a>
+        <a href="#faq" class="toc-link">FAQ</a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ────────────────────────────────────────────── -->
+  <main class="content" id="main-content">
+
+    <!-- Hero -->
+    <div class="guide-hero">
+      <div class="guide-badge">User Guide</div>
+      <h1 class="guide-title">Getting started with<br/><span class="grad">@aimata-dsl/core</span></h1>
+      <p class="guide-sub">Everything you need to compress, expand, parse, and compile UI components using the Aimata micro-DSL.</p>
+      <div class="guide-meta">
+        <span class="meta-chip">v0.1.0</span>
+        <span class="meta-chip">MIT</span>
+        <span class="meta-chip">0 dependencies</span>
+        <span class="meta-chip">Node ≥ 18 · Browser · Deno · Bun</span>
+      </div>
+    </div>
+
+    <!-- ── 1. Installation ─────────────────────────────────────────── -->
+    <section id="install" class="doc-section">
+      <h2 class="doc-h2">Installation</h2>
+
+      <div class="tab-group" role="tablist" aria-label="Package manager">
+        <button class="tab active" role="tab" aria-selected="true" data-tab="npm">npm</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="pnpm">pnpm</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="yarn">yarn</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="bun">bun</button>
+      </div>
+
+      <div class="tab-panel active" data-panel="npm">
+        <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code>npm install @aimata-dsl/core</code></pre></div>
+      </div>
+      <div class="tab-panel" data-panel="pnpm">
+        <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code>pnpm add @aimata-dsl/core</code></pre></div>
+      </div>
+      <div class="tab-panel" data-panel="yarn">
+        <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code>yarn add @aimata-dsl/core</code></pre></div>
+      </div>
+      <div class="tab-panel" data-panel="bun">
+        <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code>bun add @aimata-dsl/core</code></pre></div>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ</span>
+        <div><strong>ESM only.</strong> The package uses <code>type: "module"</code>. For CommonJS projects, use dynamic <code>import()</code> or a bundler.</div>
+      </div>
+    </section>
+
+    <!-- ── 2. Quick Start ─────────────────────────────────────────── -->
+    <section id="quick-start" class="doc-section">
+      <h2 class="doc-h2">Quick Start</h2>
+      <p class="doc-p">Import the two main functions and you're ready to go:</p>
+
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { compressToDSL, expandFromDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-comment">// 1. Take any JSX or HTML string</span>
+<span class="c-kw">const</span> jsx = <span class="c-str">`
+  &lt;button
+    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+    onClick={handleClick}
+  &gt;
+    Submit
+  &lt;/button&gt;
+`</span>;
+
+<span class="c-comment">// 2. Compress → micro-DSL (2-3× fewer tokens)</span>
+<span class="c-kw">const</span> dsl = compressToDSL(jsx);
+<span class="c-comment">// → '[button.px-4.py-2.bg-blue-500.text-white.rounded.hover:bg-blue-600{onClick=handleClick}|Submit]'</span>
+
+<span class="c-comment">// 3. Expand back to React JSX</span>
+<span class="c-kw">const</span> reactCode = expandFromDSL(dsl, <span class="c-str">'react'</span>);
+<span class="c-comment">// → '&lt;button className="px-4 py-2 bg-blue-500 ..." onClick={handleClick}&gt;Submit&lt;/button&gt;'</span>
+
+<span class="c-comment">// 4. Or expand to plain HTML</span>
+<span class="c-kw">const</span> htmlCode = expandFromDSL(dsl, <span class="c-str">'html'</span>);
+<span class="c-comment">// → '&lt;button class="px-4 py-2 bg-blue-500 ..." data-onclick="handleClick"&gt;Submit&lt;/button&gt;'</span></code></pre></div>
+    </section>
+
+    <!-- ── 3. DSL Syntax ──────────────────────────────────────────── -->
+    <section id="dsl-syntax" class="doc-section">
+      <h2 class="doc-h2">DSL Syntax</h2>
+      <p class="doc-p">The Aimata micro-DSL encodes component trees in a compact bracket notation:</p>
+
+      <div class="syntax-box">
+        <div class="syntax-line">
+          <span class="s-bracket">[</span><span class="s-tag">tag</span><span class="s-id">#id</span><span class="s-cls">.class1.class2</span><span class="s-prop">{prop1=val1,prop2=val2}</span><span class="s-pipe">|</span><span class="s-child">children or [nested]</span><span class="s-bracket">]</span>
+        </div>
+      </div>
+
+      <table class="doc-table">
+        <thead><tr><th>Part</th><th>Syntax</th><th>Example</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code class="t-tag">tag</code></td><td><code>[div|...]</code></td><td><code>[button|...]</code></td><td>Any HTML tag or PascalCase component name</td></tr>
+          <tr><td><code class="t-id">#id</code></td><td><code>[div#hero|...]</code></td><td><code>[section#intro|...]</code></td><td>Maps to <code>id="..."</code> — optional</td></tr>
+          <tr><td><code class="t-cls">.classes</code></td><td><code>[div.flex.gap-4|...]</code></td><td><code>[p.text-sm.text-gray-500|...]</code></td><td>Dot-separated, full Tailwind supported</td></tr>
+          <tr><td><code class="t-prop">{k=v}</code></td><td><code>{onClick=fn,type=submit}</code></td><td><code>{href=/,target=_blank}</code></td><td>Comma-separated key=value pairs</td></tr>
+          <tr><td><code class="t-pipe">|</code></td><td><code>[div|Hello]</code></td><td><code>[div|[span|text]]</code></td><td>Children — text or nested DSL nodes</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">💡</span>
+        <div>All parts except <code>tag</code> are optional. <code>[div]</code> is valid — it produces <code>&lt;div /&gt;</code>.</div>
+      </div>
+    </section>
+
+    <!-- ── 4. API: compressToDSL ──────────────────────────────────── -->
+    <section id="api-compress" class="doc-section">
+      <h2 class="doc-h2">API — <code>compressToDSL()</code></h2>
+
+      <div class="api-sig-box">
+        <code><span class="c-fn">compressToDSL</span>(<span class="c-param">code</span>: <span class="c-type">string</span>): <span class="c-type">string</span></code>
+      </div>
+
+      <p class="doc-p">Converts a JSX or HTML string into Aimata micro-DSL. Internally runs <code>parse()</code> then serializes the AST.</p>
+
+      <h3 class="doc-h3">Parameters</h3>
+      <table class="doc-table">
+        <thead><tr><th>Param</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>code</code></td><td><code>string</code></td><td>Yes</td><td>A JSX or HTML source string. Must be non-empty and well-formed.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="doc-h3">Returns</h3>
+      <p class="doc-p">A compact micro-DSL string. For multiple root nodes, each is newline-separated.</p>
+
+      <h3 class="doc-h3">Throws</h3>
+      <table class="doc-table">
+        <thead><tr><th>Error</th><th>Condition</th></tr></thead>
+        <tbody>
+          <tr><td><code>TypeError</code></td><td><code>code</code> is not a non-empty string</td></tr>
+          <tr><td><code>SyntaxError</code></td><td>Unclosed tag encountered during tokenization</td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { compressToDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-comment">// Simple element</span>
+compressToDSL(<span class="c-str">'&lt;div className="flex"&gt;Hello&lt;/div&gt;'</span>);
+<span class="c-comment">// → '[div.flex|Hello]'</span>
+
+<span class="c-comment">// With ID</span>
+compressToDSL(<span class="c-str">'&lt;section id="hero" className="py-20"&gt;&lt;/section&gt;'</span>);
+<span class="c-comment">// → '[section#hero.py-20]'</span>
+
+<span class="c-comment">// Nested children</span>
+compressToDSL(<span class="c-str">'&lt;ul&gt;&lt;li&gt;One&lt;/li&gt;&lt;li&gt;Two&lt;/li&gt;&lt;/ul&gt;'</span>);
+<span class="c-comment">// → '[ul|[li|One][li|Two]]'</span>
+
+<span class="c-comment">// Error handling</span>
+<span class="c-kw">try</span> {
+  compressToDSL(<span class="c-str">''</span>);
+} <span class="c-kw">catch</span> (e) {
+  console.error(e.message); <span class="c-comment">// TypeError: compressToDSL expects a non-empty string</span>
+}</code></pre></div>
+    </section>
+
+    <!-- ── 5. API: expandFromDSL ──────────────────────────────────── -->
+    <section id="api-expand" class="doc-section">
+      <h2 class="doc-h2">API — <code>expandFromDSL()</code></h2>
+
+      <div class="api-sig-box">
+        <code><span class="c-fn">expandFromDSL</span>(<span class="c-param">dsl</span>: <span class="c-type">string</span>, <span class="c-param">targetFramework</span>?: <span class="c-str">'react'</span> | <span class="c-str">'html'</span>): <span class="c-type">string</span></code>
+      </div>
+
+      <p class="doc-p">Expands an Aimata micro-DSL string back into production-ready source code.</p>
+
+      <h3 class="doc-h3">Parameters</h3>
+      <table class="doc-table">
+        <thead><tr><th>Param</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>dsl</code></td><td><code>string</code></td><td>—</td><td>An Aimata micro-DSL string</td></tr>
+          <tr><td><code>targetFramework</code></td><td><code>'react' | 'html'</code></td><td><code>'react'</code></td><td>Output format</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="doc-h3">Output differences by target</h3>
+      <table class="doc-table">
+        <thead><tr><th>Feature</th><th><code>'react'</code></th><th><code>'html'</code></th></tr></thead>
+        <tbody>
+          <tr><td>Class attribute</td><td><code>className="..."</code></td><td><code>class="..."</code></td></tr>
+          <tr><td>Event handlers</td><td><code>onClick={handler}</code></td><td><code>data-onclick="handler"</code></td></tr>
+          <tr><td>Boolean props</td><td><code>disabled</code></td><td><code>disabled</code></td></tr>
+          <tr><td>PascalCase tags</td><td>Kept as-is (<code>&lt;Button&gt;</code>)</td><td>Lowercased to <code>&lt;div&gt;</code></td></tr>
+          <tr><td>Void elements</td><td><code>&lt;img /&gt;</code></td><td><code>&lt;img /&gt;</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { expandFromDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-kw">const</span> dsl = <span class="c-str">'[button.px-4.py-2.bg-blue-500{onClick=go,type=submit}|Click me]'</span>;
+
+<span class="c-comment">// React output</span>
+expandFromDSL(dsl, <span class="c-str">'react'</span>);
+<span class="c-comment">// → '&lt;button className="px-4 py-2 bg-blue-500" onClick={go} type="submit"&gt;Click me&lt;/button&gt;'</span>
+
+<span class="c-comment">// HTML output</span>
+expandFromDSL(dsl, <span class="c-str">'html'</span>);
+<span class="c-comment">// → '&lt;button class="px-4 py-2 bg-blue-500" data-onclick="go" type="submit"&gt;Click me&lt;/button&gt;'</span>
+
+<span class="c-comment">// Default is 'react'</span>
+expandFromDSL(dsl);
+<span class="c-comment">// → same as expandFromDSL(dsl, 'react')</span></code></pre></div>
+    </section>
+
+    <!-- ── 6. API: parse ──────────────────────────────────────────── -->
+    <section id="api-parse" class="doc-section">
+      <h2 class="doc-h2">API — <code>parse()</code></h2>
+
+      <div class="api-sig-box">
+        <code><span class="c-fn">parse</span>(<span class="c-param">source</span>: <span class="c-type">string</span>): <span class="c-type">ASTNode[]</span></code>
+      </div>
+
+      <p class="doc-p">Tokenizes and parses a JSX/HTML string into a plain-object AST. Useful for analysis, class extraction, or building custom transformers.</p>
+
+      <h3 class="doc-h3">ASTNode shape</h3>
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-comment">// ASTNode (TypeScript-style for reference)</span>
+{
+  type:     <span class="c-str">'element'</span> | <span class="c-str">'component'</span> | <span class="c-str">'text'</span>,
+  tag:      <span class="c-type">string</span>,           <span class="c-comment">// 'div', 'Button', etc.</span>
+  id:       <span class="c-type">string</span> | <span class="c-kw">null</span>,   <span class="c-comment">// from id="" attribute</span>
+  classes:  <span class="c-type">string[]</span>,         <span class="c-comment">// from className / class</span>
+  props:    <span class="c-type">Record&lt;string, string&gt;</span>, <span class="c-comment">// all other attributes</span>
+  children: <span class="c-type">ASTNode[]</span>,        <span class="c-comment">// nested nodes</span>
+  raw:      <span class="c-type">string</span>,           <span class="c-comment">// original source for debugging</span>
+}</code></pre></div>
+
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { parse } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-kw">const</span> ast = parse(<span class="c-str">`
+  &lt;div id="card" className="rounded-xl p-6"&gt;
+    &lt;h2 className="font-bold"&gt;Title&lt;/h2&gt;
+  &lt;/div&gt;
+`</span>);
+
+<span class="c-comment">// ast[0] →</span>
+{
+  type: <span class="c-str">'element'</span>,
+  tag: <span class="c-str">'div'</span>,
+  id: <span class="c-str">'card'</span>,
+  classes: [<span class="c-str">'rounded-xl'</span>, <span class="c-str">'p-6'</span>],
+  props: {},
+  children: [{
+    type: <span class="c-str">'element'</span>, tag: <span class="c-str">'h2'</span>,
+    classes: [<span class="c-str">'font-bold'</span>],
+    children: [{ type: <span class="c-str">'text'</span>, value: <span class="c-str">'Title'</span> }]
+  }]
+}
+
+<span class="c-comment">// Extract all classes recursively</span>
+<span class="c-kw">function</span> <span class="c-fn">allClasses</span>(nodes) {
+  <span class="c-kw">return</span> nodes.flatMap(n =>
+    n.type === <span class="c-str">'text'</span> ? [] : [...n.classes, ...allClasses(n.children)]
+  );
+}
+allClasses(ast); <span class="c-comment">// ['rounded-xl', 'p-6', 'font-bold']</span></code></pre></div>
+    </section>
+
+    <!-- ── 7. API: compile ────────────────────────────────────────── -->
+    <section id="api-compile" class="doc-section">
+      <h2 class="doc-h2">API — <code>compile()</code></h2>
+
+      <div class="api-sig-box">
+        <code><span class="c-fn">compile</span>(<span class="c-param">ast</span>: <span class="c-type">ASTNode[]</span>, <span class="c-param">options</span>?: { target: <span class="c-str">'dsl'</span> | <span class="c-str">'react'</span> | <span class="c-str">'html'</span> }): <span class="c-type">string</span></code>
+      </div>
+
+      <p class="doc-p">Compiles an AST (from <code>parse()</code>) to any output format. Use this when you already have an AST and want to skip re-parsing.</p>
+
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { parse, compile } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-kw">const</span> ast = parse(<span class="c-str">'&lt;nav className="flex px-8"&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/nav&gt;'</span>);
+
+<span class="c-comment">// To DSL (default)</span>
+compile(ast, { target: <span class="c-str">'dsl'</span> });
+<span class="c-comment">// → '[nav.flex.px-8|[a{href=/}|Home]]'</span>
+
+<span class="c-comment">// To React JSX</span>
+compile(ast, { target: <span class="c-str">'react'</span> });
+<span class="c-comment">// → '&lt;nav className="flex px-8"&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/nav&gt;'</span>
+
+<span class="c-comment">// To plain HTML</span>
+compile(ast, { target: <span class="c-str">'html'</span> });
+<span class="c-comment">// → '&lt;nav class="flex px-8"&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/nav&gt;'</span></code></pre></div>
+    </section>
+
+    <!-- ── 8. Examples ────────────────────────────────────────────── -->
+    <section id="examples" class="doc-section">
+      <h2 class="doc-h2">Real-World Examples</h2>
+
+      <h3 id="ex-button" class="doc-h3">Button component</h3>
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { compressToDSL, expandFromDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-kw">const</span> input = <span class="c-str">`&lt;button
+  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white
+             font-semibold rounded-xl transition-colors shadow-lg
+             disabled:opacity-50 disabled:cursor-not-allowed"
+  onClick={handleSubmit}
+  type="submit"
+  disabled
+&gt;
+  Get Started
+&lt;/button&gt;`</span>;
+
+<span class="c-kw">const</span> dsl = compressToDSL(input);
+<span class="c-comment">// [button.px-4.py-3.bg-blue-600.hover:bg-blue-700.text-white.font-semibold
+//  .rounded-xl.transition-colors.shadow-lg.disabled:opacity-50
+//  .disabled:cursor-not-allowed{onClick=handleSubmit,type=submit}|Get Started]</span>
+
+expandFromDSL(dsl, <span class="c-str">'react'</span>);
+<span class="c-comment">// → Exact JSX back, className restored, disabled as boolean attr</span></code></pre></div>
+
+      <h3 id="ex-card" class="doc-h3">Card with nested children</h3>
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-kw">const</span> card = <span class="c-str">`
+&lt;div id="feature-card" className="rounded-2xl border border-gray-200 bg-white shadow-md p-8"&gt;
+  &lt;div className="w-12 h-12 bg-blue-100 rounded-xl mb-4"&gt;&lt;/div&gt;
+  &lt;h3 className="text-xl font-bold text-gray-900 mb-2"&gt;Zero Dependencies&lt;/h3&gt;
+  &lt;p className="text-gray-500 leading-relaxed"&gt;No Babel. No webpack. Just pure JS.&lt;/p&gt;
+&lt;/div&gt;
+`</span>;
+
+compressToDSL(card);
+<span class="c-comment">// [div#feature-card.rounded-2xl.border.border-gray-200.bg-white.shadow-md.p-8|
+//   [div.w-12.h-12.bg-blue-100.rounded-xl.mb-4]
+//   [h3.text-xl.font-bold.text-gray-900.mb-2|Zero Dependencies]
+//   [p.text-gray-500.leading-relaxed|No Babel. No webpack. Just pure JS.]]</span></code></pre></div>
+
+      <h3 id="ex-nav" class="doc-h3">Navigation bar</h3>
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-kw">const</span> nav = <span class="c-str">`
+&lt;nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-8 py-4
+               bg-gray-900/80 backdrop-blur-xl border-b border-white/10"&gt;
+  &lt;a href="/" className="text-white font-bold text-lg"&gt;Brand&lt;/a&gt;
+  &lt;div className="flex items-center gap-6"&gt;
+    &lt;a href="/docs" className="text-gray-400 hover:text-white text-sm"&gt;Docs&lt;/a&gt;
+    &lt;a href="/pricing" className="text-gray-400 hover:text-white text-sm"&gt;Pricing&lt;/a&gt;
+    &lt;button className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg"
+            onClick={openLogin}&gt;Sign in&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;
+`</span>;
+
+<span class="c-kw">const</span> dsl = compressToDSL(nav);
+<span class="c-comment">// Compresses ~620 chars → ~280 chars (2.2× ratio)</span>
+<span class="c-comment">// Deterministic: compressToDSL(expandFromDSL(dsl)) === dsl ✅</span></code></pre></div>
+
+      <h3 id="ex-form" class="doc-h3">Form with inputs</h3>
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-kw">const</span> form = <span class="c-str">`
+&lt;form className="space-y-4" onSubmit={handleSubmit}&gt;
+  &lt;input
+    type="email"
+    placeholder="you@example.com"
+    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+  /&gt;
+  &lt;button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-lg"&gt;
+    Subscribe
+  &lt;/button&gt;
+&lt;/form&gt;
+`</span>;
+
+<span class="c-kw">const</span> dsl = compressToDSL(form);
+<span class="c-comment">// [form.space-y-4{onSubmit=handleSubmit}|
+//   [input.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus:ring-2.focus:ring-blue-500
+//          {type=email,placeholder=you@example.com}]
+//   [button.w-full.py-2.bg-blue-600.text-white.rounded-lg{type=submit}|Subscribe]]</span>
+
+<span class="c-comment">// Self-closing inputs are preserved correctly</span>
+expandFromDSL(dsl, <span class="c-str">'react'</span>);
+<span class="c-comment">// → &lt;input ... /&gt; (void element, no closing tag)</span></code></pre></div>
+    </section>
+
+    <!-- ── 9. Integration Patterns ────────────────────────────────── -->
+    <section id="patterns" class="doc-section">
+      <h2 class="doc-h2">Integration Patterns</h2>
+
+      <h3 id="pat-ai" class="doc-h3">🤖 AI Prompt Compression</h3>
+      <p class="doc-p">The primary use case — compress UI before sending to an LLM to save tokens and cost, then expand the response back:</p>
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { compressToDSL, expandFromDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-kw">async function</span> <span class="c-fn">editComponentWithAI</span>(jsx, instruction) {
+  <span class="c-comment">// Compress before sending — saves ~50% tokens</span>
+  <span class="c-kw">const</span> dsl = compressToDSL(jsx);
+
+  <span class="c-kw">const</span> response = <span class="c-kw">await</span> fetch(<span class="c-str">'/api/ai'</span>, {
+    method: <span class="c-str">'POST'</span>,
+    body: JSON.stringify({
+      messages: [{
+        role: <span class="c-str">'user'</span>,
+        content: <span class="c-str">`Edit this component (Aimata DSL format):
+${dsl}
+
+Instruction: ${instruction}
+
+Reply with ONLY the modified DSL.`</span>
+      }]
+    })
+  });
+
+  <span class="c-kw">const</span> { dslReply } = <span class="c-kw">await</span> response.json();
+
+  <span class="c-comment">// Expand AI's DSL response back to JSX</span>
+  <span class="c-kw">return</span> expandFromDSL(dslReply, <span class="c-str">'react'</span>);
+}</code></pre></div>
+
+      <h3 id="pat-extract" class="doc-h3">🎨 Design Token Extraction</h3>
+      <p class="doc-p">Parse any component tree and extract all Tailwind classes for analysis or theming:</p>
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { parse } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-kw">function</span> <span class="c-fn">extractTokens</span>(jsx) {
+  <span class="c-kw">function</span> <span class="c-fn">walk</span>(nodes) {
+    <span class="c-kw">return</span> nodes.flatMap(n =>
+      n.type === <span class="c-str">'text'</span> ? [] : [...n.classes, ...walk(n.children)]
+    );
+  }
+  <span class="c-kw">return</span> [...<span class="c-kw">new</span> Set(walk(parse(jsx)))]; <span class="c-comment">// deduplicated</span>
+}
+
+extractTokens(myComponent);
+<span class="c-comment">// ['flex', 'gap-4', 'rounded-xl', 'bg-blue-500', 'text-white', ...]</span>
+
+<span class="c-comment">// Count usage of each class across multiple components</span>
+<span class="c-kw">const</span> usage = components.flatMap(c => extractTokens(c))
+  .reduce((acc, cls) => ({ ...acc, [cls]: (acc[cls] || <span class="c-num">0</span>) + <span class="c-num">1</span> }), {});
+<span class="c-comment">// { 'flex': 14, 'rounded-xl': 8, 'bg-blue-500': 3, ... }</span></code></pre></div>
+
+      <h3 id="pat-crossfw" class="doc-h3">⚡ Cross-Framework Output</h3>
+      <p class="doc-p">Maintain one DSL source, export to multiple frameworks:</p>
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { compressToDSL, expandFromDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-comment">// Store DSL as your source of truth</span>
+<span class="c-kw">const</span> BUTTON_DSL = <span class="c-str">'[button.px-4.py-2.bg-blue-600.text-white.rounded-lg{onClick=fn}|Click]'</span>;
+
+<span class="c-comment">// Export to any target on demand</span>
+<span class="c-kw">const</span> reactOutput = expandFromDSL(BUTTON_DSL, <span class="c-str">'react'</span>);
+<span class="c-comment">// &lt;button className="px-4 py-2 bg-blue-600 text-white rounded-lg" onClick={fn}&gt;Click&lt;/button&gt;</span>
+
+<span class="c-kw">const</span> htmlOutput  = expandFromDSL(BUTTON_DSL, <span class="c-str">'html'</span>);
+<span class="c-comment">// &lt;button class="px-4 py-2 bg-blue-600 text-white rounded-lg" data-onclick="fn"&gt;Click&lt;/button&gt;</span></code></pre></div>
+    </section>
+
+    <!-- ── 10. Error Handling ──────────────────────────────────────── -->
+    <section id="errors" class="doc-section">
+      <h2 class="doc-h2">Error Handling</h2>
+      <div class="code-block"><button class="copy-btn" aria-label="Copy">⎘</button><pre><code><span class="c-import">import</span> { compressToDSL, expandFromDSL } <span class="c-import">from</span> <span class="c-str">'@aimata-dsl/core'</span>;
+
+<span class="c-comment">// compressToDSL errors</span>
+<span class="c-kw">try</span> {
+  compressToDSL(<span class="c-str">''</span>);             <span class="c-comment">// TypeError</span>
+  compressToDSL(<span class="c-kw">null</span>);           <span class="c-comment">// TypeError</span>
+  compressToDSL(<span class="c-str">'&lt;div'</span>);         <span class="c-comment">// SyntaxError: Unclosed tag</span>
+} <span class="c-kw">catch</span> (e) {
+  <span class="c-kw">if</span> (e <span class="c-kw">instanceof</span> TypeError)  console.error(<span class="c-str">'Invalid input:'</span>, e.message);
+  <span class="c-kw">if</span> (e <span class="c-kw">instanceof</span> SyntaxError) console.error(<span class="c-str">'Parse error:'</span>, e.message);
+}
+
+<span class="c-comment">// expandFromDSL errors</span>
+<span class="c-kw">try</span> {
+  expandFromDSL(<span class="c-str">''</span>);               <span class="c-comment">// TypeError: expects non-empty DSL string</span>
+  expandFromDSL(<span class="c-str">'[div]'</span>, <span class="c-str">'vue'</span>);  <span class="c-comment">// TypeError: target must be 'react' or 'html'</span>
+} <span class="c-kw">catch</span> (e) {
+  console.error(e.message);
+}</code></pre></div>
+    </section>
+
+    <!-- ── 11. FAQ ─────────────────────────────────────────────────── -->
+    <section id="faq" class="doc-section">
+      <h2 class="doc-h2">FAQ</h2>
+
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary class="faq-q">Does it work in the browser without bundling?</summary>
+          <div class="faq-a">Yes. Import it via a CDN or local path using <code>&lt;script type="module"&gt;</code>:
+            <div class="code-block mt-8"><pre><code>&lt;script type="module"&gt;
+  import { compressToDSL } from 'https://cdn.jsdelivr.net/npm/@aimata-dsl/core/src/index.js';
+  console.log(compressToDSL('&lt;div className="flex"&gt;Hi&lt;/div&gt;'));
+&lt;/script&gt;</code></pre></div>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">Is the compression lossless?</summary>
+          <div class="faq-a">Yes — <code>compressToDSL(expandFromDSL(dsl))</code> always equals the original DSL. All structural information (tag, id, classes, props, children) is preserved exactly. Whitespace between tags is normalized.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">Does it support TypeScript generics or complex JSX expressions?</summary>
+          <div class="faq-a">The parser handles well-formed JSX tags and string/identifier prop values. Complex inline TypeScript generics or multi-line JSX expressions inside props (e.g. <code>children={(x) =&gt; &lt;div&gt;{x}&lt;/div&gt;}</code>) are not supported — use <code>parse()</code> on the outer structure and handle those props manually.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">How does it handle PascalCase React components?</summary>
+          <div class="faq-a">They're classified as <code>type: 'component'</code> in the AST and preserved as-is in React output. In HTML output (<code>'html'</code> target), PascalCase tags are lowercased to <code>&lt;div&gt;</code> as a fallback.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">Can I use this with CommonJS (require)?</summary>
+          <div class="faq-a">The package is ESM-only. For CJS projects, use dynamic import:
+            <div class="code-block mt-8"><pre><code>const { compressToDSL } = await import('@aimata-dsl/core');</code></pre></div>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">What's the typical token reduction?</summary>
+          <div class="faq-a">2–3× for typical Tailwind-heavy components. A 580-character JSX button with many classes compresses to ~220 characters — roughly a 48% reduction in characters, and even more in LLM tokens since the DSL avoids repeated patterns like <code>className=</code>, quotes, and tag-pair verbosity.</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Footer nav -->
+    <div class="doc-footer-nav">
+      <a href="index.html" class="doc-nav-btn">← Home</a>
+      <a href="../studio/index.html" class="doc-nav-btn primary">Open Studio →</a>
+    </div>
+
+  </main>
+</div>
+
+<script src="guide.js"></script>
+</body>
+</html>

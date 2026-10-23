@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aimata Studio — DSL Playground</title>
+  <meta name="description" content="Interactive playground for the Aimata micro-DSL. Compress JSX/HTML/Tailwind into dense DSL and expand back to production code in real time." />
+  <link rel="stylesheet" href="src/style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── Topbar ─────────────────────────────────────────────────────── -->
+  <header class="topbar" role="banner">
+    <div class="logo">
+      <div class="logo-icon" aria-hidden="true">⬡</div>
+      Aimata Studio
+      <span class="logo-badge">v0.1.0</span>
+    </div>
+
+    <div class="topbar-center" role="group" aria-label="Target framework">
+      <button id="fw-react" class="framework-btn active" data-fw="react" aria-pressed="true">React JSX</button>
+      <button id="fw-html" class="framework-btn" data-fw="html" aria-pressed="false">Plain HTML</button>
+    </div>
+
+    <div class="topbar-actions">
+      <button id="btn-copy-dsl" class="icon-btn" aria-label="Copy DSL to clipboard">⎘ Copy DSL</button>
+      <button id="btn-clear" class="icon-btn" aria-label="Clear input">✕ Clear</button>
+    </div>
+  </header>
+
+  <!-- ── Main Workspace ─────────────────────────────────────────────── -->
+  <main id="workspace" class="workspace" role="main">
+
+    <!-- Input Pane -->
+    <section class="pane" aria-label="JSX/HTML Input">
+      <div class="pane-header">
+        <div class="pane-dot blue" aria-hidden="true"></div>
+        <span class="pane-title">Input — JSX / HTML</span>
+        <span class="pane-meta" id="input-chars" aria-live="polite"></span>
+      </div>
+      <div id="error-banner" class="error-banner" role="alert" aria-live="assertive"></div>
+      <div class="editor-wrap">
+        <textarea
+          id="input-editor"
+          class="code-editor"
+          placeholder="Paste any JSX, HTML, or Tailwind component here…"
+          spellcheck="false"
+          autocorrect="off"
+          autocapitalize="off"
+          aria-label="JSX or HTML source code"
+        ></textarea>
+      </div>
+      <div class="stats-bar" aria-label="Compression statistics">
+        <div class="stat-chip">
+          <span class="stat-label">chars in</span>
+          <span id="stat-in" class="stat-value">0</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-label">→ out</span>
+          <span id="stat-out" class="stat-value">0</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-label">ratio</span>
+          <span id="stat-ratio" class="stat-value">—</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-label">token saving</span>
+          <span id="stat-saving" class="stat-value highlight">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resize divider -->
+    <div class="divider" role="separator" aria-orientation="vertical" aria-label="Resize panels"></div>
+
+    <!-- DSL + Expanded Panes (stacked vertically) -->
+    <div style="display:grid; grid-template-rows: 1fr 4px 1fr; overflow:hidden;">
+
+      <!-- DSL Output -->
+      <section class="pane" aria-label="Aimata DSL Output">
+        <div class="pane-header">
+          <div class="pane-dot cyan" aria-hidden="true"></div>
+          <span class="pane-title">Aimata micro-DSL</span>
+          <span class="pane-meta">compressed</span>
+        </div>
+        <div
+          id="dsl-output"
+          class="dsl-output"
+          role="region"
+          aria-label="DSL output"
+          aria-live="polite"
+        ></div>
+      </section>
+
+      <!-- Horizontal divider -->
+      <div style="background:var(--border);cursor:row-resize;" role="separator" aria-orientation="horizontal"></div>
+
+      <!-- Expanded Output -->
+      <section class="pane" aria-label="Expanded Code Output">
+        <div class="pane-header">
+          <div class="pane-dot green" aria-hidden="true"></div>
+          <span class="pane-title">Expanded — </span>
+          <span class="pane-title" id="expand-label" style="color:var(--accent-green)">React JSX</span>
+          <span class="pane-meta">production-ready</span>
+        </div>
+        <div class="editor-wrap">
+          <textarea
+            id="expand-output"
+            class="code-editor"
+            readonly
+            spellcheck="false"
+            aria-label="Expanded code output (read-only)"
+            placeholder="Expanded code will appear here…"
+          ></textarea>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ── Statusbar ──────────────────────────────────────────────────── -->
+  <footer class="statusbar" role="status" aria-live="polite">
+    <span class="statusbar-item">⬡ Aimata DSL</span>
+    <span class="statusbar-sep">│</span>
+    <span id="status-text" class="statusbar-item">Ready</span>
+    <span class="statusbar-sep">│</span>
+    <span class="statusbar-item">No build required</span>
+    <span class="statusbar-sep">│</span>
+    <span class="statusbar-item">@aimata-dsl/core v0.1.0</span>
+  </footer>
+
+</div>
+
+<script type="module" src="src/main.js"></script>
+<script>
+  // Sync framework button aria-pressed and expand-label
+  document.querySelectorAll('.framework-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.framework-btn').forEach(b => b.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      document.getElementById('expand-label').textContent =
+        btn.dataset.fw === 'react' ? 'React JSX' : 'Plain HTML';
+    });
+  });
+</script>
+
+</body>
+</html>

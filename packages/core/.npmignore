@@ -1,0 +1,6 @@
+# Exclude test/dev files from the published package
+src/test.js
+*.test.js
+*.spec.js
+.github/
+.npmignore

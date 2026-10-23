@@ -1,0 +1,58 @@
+{
+  "name": "@aimata-dsl/core",
+  "version": "0.1.0",
+  "description": "Token-optimized micro-DSL compiler for AI-assisted UI generation. Compress JSX/HTML/Tailwind into dense DSL and expand back deterministically.",
+  "main": "src/index.js",
+  "type": "module",
+  "files": [
+    "src/index.js",
+    "src/compiler.js",
+    "src/parser.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": "./src/index.js",
+    "./compiler": "./src/compiler.js",
+    "./parser": "./src/parser.js"
+  },
+  "scripts": {
+    "test": "node src/test.js",
+    "prepublishOnly": "node src/test.js",
+    "check": "node --check src/compiler.js && node --check src/parser.js && node --check src/index.js"
+  },
+  "keywords": [
+    "aimata",
+    "dsl",
+    "compiler",
+    "ast",
+    "jsx",
+    "html",
+    "tailwind",
+    "token-compression",
+    "ui",
+    "ai",
+    "mcp",
+    "code-generation"
+  ],
+  "author": {
+    "name": "Pravesh Shukla",
+    "url": "https://github.com/pravesh98"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pravesh98/ai-mata-dsl.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pravesh98/ai-mata-dsl/issues"
+  },
+  "homepage": "https://pravesh98.github.io/ai-mata-dsl",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

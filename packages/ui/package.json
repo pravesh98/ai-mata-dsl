@@ -1,0 +1,30 @@
+{
+  "name": "@aimata-dsl/ui",
+  "version": "0.1.0",
+  "description": "Aimata DSL: token-optimized React component library primitives",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/index.js"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "@aimata-dsl/core": "workspace:*"
+  },
+  "keywords": [
+    "aimata",
+    "dsl",
+    "ui",
+    "components",
+    "react",
+    "token-optimized"
+  ],
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.js",
+    "./components": "./src/components/index.js"
+  }
+}

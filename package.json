@@ -1,0 +1,30 @@
+{
+  "name": "aimata-dsl",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Aimata micro-DSL: token-optimized component language for AI-assisted UI generation",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "dev:studio": "npm run dev --workspace=apps/studio",
+    "dev:server": "npm run start --workspace=packages/mcp-server",
+    "check": "node --check packages/core/src/compiler.js && node --check packages/core/src/parser.js && node --check packages/mcp-server/src/index.js"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pravesh98/ai-mata-dsl.git"
+  },
+  "license": "MIT"
+}

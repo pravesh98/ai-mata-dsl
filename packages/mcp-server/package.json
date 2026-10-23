@@ -1,0 +1,24 @@
+{
+  "name": "@aimata-dsl/mcp-server",
+  "version": "0.1.0",
+  "description": "Aimata DSL: Model Context Protocol integration server",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "check": "node --check src/index.js"
+  },
+  "dependencies": {
+    "@aimata-dsl/core": "workspace:*"
+  },
+  "keywords": [
+    "aimata",
+    "dsl",
+    "mcp",
+    "model-context-protocol",
+    "server",
+    "ai"
+  ],
+  "license": "MIT"
+}

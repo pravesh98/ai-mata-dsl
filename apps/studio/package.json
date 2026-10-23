@@ -1,0 +1,14 @@
+{
+  "name": "aimata-studio",
+  "version": "0.1.0",
+  "description": "Aimata DSL interactive web playground and benchmark studio",
+  "private": true,
+  "scripts": {
+    "dev": "npx --yes serve . -l 3200",
+    "build": "echo 'Studio is a static app — no build step required. Open index.html directly.'"
+  },
+  "dependencies": {
+    "@aimata-dsl/core": "workspace:*"
+  },
+  "license": "MIT"
+}
